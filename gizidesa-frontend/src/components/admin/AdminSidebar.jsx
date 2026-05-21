@@ -55,7 +55,7 @@ function AdminSidebar() {
     },
     {
       label: "Pangan Lokal",
-      path: "/admin/pangan-lokal",
+      path: "/admin/pangan",
       icon: Sprout,
     },
     {
@@ -92,7 +92,7 @@ function AdminSidebar() {
         </div>
       </button>
 
-      <nav className="admin-menu">
+      <nav className="admin-menu" aria-label="Menu Admin">
         {menuItems.map((item) => {
           const Icon = item.icon;
 
@@ -111,9 +111,13 @@ function AdminSidebar() {
         })}
       </nav>
 
-      <button type="button" className="admin-logout-button" onClick={handleLogout}>
+      <button
+        type="button"
+        className="admin-logout-button"
+        onClick={handleLogout}
+      >
         <LogOut size={18} />
-        Keluar
+        <span>Keluar</span>
       </button>
     </aside>
   );

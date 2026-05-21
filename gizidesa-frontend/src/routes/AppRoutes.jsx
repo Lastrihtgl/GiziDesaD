@@ -13,6 +13,11 @@ import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminWilayahPage from "../pages/admin/wilayah/AdminWilayahPage";
 import AdminDataRisikoPage from "../pages/admin/risiko/AdminDataRisikoPage";
+
+import AdminRekomendasiPage from "../pages/admin/rekomendasi/AdminRekomendasiPage";
+import AdminPanganLokalPage from "../pages/admin/pangan/AdminPanganLokalPage";
+import AdminIntervensiPage from "../pages/admin/intervensi/AdminIntervensiPage";
+
 import BidanDashboard from "../pages/bidan/BidanDashboard";
 
 import KaderDashboard from "../pages/kader/KaderDashboard";
@@ -102,6 +107,33 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/admin/rekomendasi"
+        element={
+            <ProtectedRoute>
+            <AdminRekomendasiPage />
+            </ProtectedRoute>
+        }
+        />
+
+        <Route
+  path="/admin/pangan"
+  element={
+    <ProtectedRoute>
+      <AdminPanganLokalPage />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/intervensi"
+  element={
+    <ProtectedRoute allowedRoles={["admin_desa"]}>
+      <AdminIntervensiPage />
+    </ProtectedRoute>
+  }
+/>
 
       {/* KADER */}
       <Route
