@@ -694,4 +694,793 @@
   .public-flow-card svg {
     display: none;
   }
+}/* =========================
+   BASE
+========================= */
+
+.public-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 0% 8%, rgba(39, 122, 43, 0.06), transparent 28%),
+    radial-gradient(circle at 100% 8%, rgba(245, 158, 11, 0.05), transparent 24%),
+    #f4f6f1;
+  color: #1c2730;
+  font-family:
+    Inter,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+}
+
+.public-page button,
+.public-page a {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.public-container {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.public-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  min-height: 64px;
+  padding: 0 40px;
+  border-bottom: 1px solid #e4ebe1;
+  background: rgba(244, 246, 241, 0.94);
+  backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Brand / Logo */
+.public-brand {
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #173d2a;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  text-decoration: none;
+}
+
+.public-brand img {
+  width: 40px;
+  height: 32px;
+  border-radius: 11px;
+  object-fit: contain;
+  background: #ffffff;
+  border: 1px solid #e2eadf;
+}
+
+/* Nav links */
+.public-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.public-nav button {
+  position: relative;
+  border: none;
+  background: transparent;
+  color: #3d4f45;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.public-nav button:hover {
+  color: #277a2b;
+  background: #eef7ec;
+}
+
+/* Active nav item — tambahkan class "active" via JS jika diperlukan */
+.public-nav button.active {
+  color: #277a2b;
+  font-weight: 600;
+  background: #eef7ec;
+}
+
+/* Underline indicator aktif */
+.public-nav button.active::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: #277a2b;
+}
+
+.public-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Tombol Masuk — selaras dengan admin-primary-button */
+.public-login-button,
+.public-primary-button {
+  min-height: 40px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 12px;
+  background: #277a2b;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(39, 122, 43, 0.2);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.public-login-button:hover,
+.public-primary-button:hover {
+  background: #1f6e25;
+  transform: translateY(-1px);
+}
+
+.public-secondary-button {
+  min-height: 40px;
+  padding: 0 20px;
+  border: 1px solid #d8e4d5;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #277a2b;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.public-secondary-button:hover {
+  background: #eef7ec;
+  border-color: #b8d4b5;
+}
+
+/* Hamburger button */
+.public-menu-button {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e4ebe1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #277a2b;
+  place-items: center;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.public-hero {
+  padding: 56px 0 48px;
+}
+
+.public-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  align-items: center;
+  gap: 40px;
+}
+
+/* Eyebrow label kecil — selaras dgn admin label uppercase */
+.public-eyebrow,
+.public-section-header span,
+.public-cta-card span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background: #eef7ec;
+  color: #277a2b;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Heading hero: besar tapi tidak terlalu berat */
+.public-hero-content h1 {
+  max-width: 640px;
+  margin: 16px 0 14px;
+  color: #173d2a;
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  line-height: 1.1;
+}
+
+.public-hero-content p {
+  max-width: 580px;
+  margin: 0;
+  color: #66726b;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.public-hero-actions {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Catatan kecil di bawah tombol */
+.public-hero-note {
+  margin-top: 16px;
+  max-width: 580px;
+  padding: 11px 14px;
+  border: 1px solid #cde5d4;
+  border-radius: 14px;
+  background: rgba(238, 247, 236, 0.7);
+  color: #2c6b3a;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.public-hero-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #277a2b;
+}
+
+/* =========================
+   HERO DASHBOARD CARD
+========================= */
+
+.public-dashboard-card {
+  padding: 24px;
+  border: 1px solid #e4ebe1;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(30, 40, 35, 0.08);
+}
+
+.public-dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.public-dashboard-header span {
+  display: block;
+  color: #7a8780;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.public-dashboard-header h2 {
+  margin: 6px 0 0;
+  color: #1c2730;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.public-dashboard-header svg {
+  color: #277a2b;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Daftar risiko */
+.public-risk-list {
+  margin-top: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.public-risk-list div {
+  min-height: 44px;
+  padding: 0 15px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.public-risk-list strong,
+.public-risk-list span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.public-risk-list .low {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.public-risk-list .medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.public-risk-list .high {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Kotak faktor dominan */
+.public-factor-box {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f4f6f1;
+  border: 1px solid #e4ebe1;
+}
+
+.public-factor-box small {
+  color: #7a8780;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.public-factor-box strong {
+  display: block;
+  margin-top: 6px;
+  color: #173d2a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.public-factor-box p {
+  margin: 6px 0 0;
+  color: #66726b;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* =========================
+   SECTION BASE
+========================= */
+
+.public-section {
+  padding: 52px 0;
+}
+
+.public-section.soft {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(39, 122, 43, 0.06), transparent 30%),
+    rgba(255, 255, 255, 0.5);
+}
+
+.public-section-header {
+  max-width: 680px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.public-section-header h2 {
+  margin: 12px 0 10px;
+  color: #173d2a;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  line-height: 1.2;
+}
+
+.public-section-header p {
+  max-width: 640px;
+  margin: 0 auto;
+  color: #66726b;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+/* =========================
+   INFO CARDS
+========================= */
+
+.public-card-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.public-card-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.public-card-grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.public-info-card,
+.public-user-card {
+  min-height: 170px;
+  padding: 22px;
+  border: 1px solid #e4ebe1;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(30, 40, 35, 0.05);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.public-info-card:hover,
+.public-user-card:hover {
+  box-shadow: 0 10px 28px rgba(30, 40, 35, 0.1);
+  transform: translateY(-2px);
+}
+
+.public-info-card.compact {
+  min-height: 162px;
+}
+
+/* Icon card */
+.public-card-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #eef7ec;
+  color: #277a2b;
+  display: grid;
+  place-items: center;
+}
+
+.public-card-icon.warning {
+  background: #fff7d6;
+  color: #92400e;
+}
+
+.public-info-card h3,
+.public-user-card h3 {
+  margin: 16px 0 7px;
+  color: #1c2730;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.15px;
+  line-height: 1.3;
+}
+
+.public-info-card p,
+.public-user-card p {
+  margin: 0;
+  color: #66726b;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* User card */
+.public-user-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.public-user-card svg {
+  color: #277a2b;
+}
+
+/* =========================
+   FLOW CARD
+========================= */
+
+.public-flow-card {
+  margin-top: 18px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: #277a2b;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(39, 122, 43, 0.2);
+}
+
+.public-flow-card > span {
+  display: block;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.public-flow-card > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.public-flow-card strong {
+  min-height: 32px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.public-flow-card svg {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* =========================
+   CTA SECTION
+========================= */
+
+.public-cta-section {
+  padding: 36px 0 52px;
+}
+
+.public-cta-card {
+  padding: 28px 32px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e4ebe1;
+  box-shadow: 0 8px 28px rgba(30, 40, 35, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.public-cta-card h2 {
+  margin: 10px 0 8px;
+  color: #173d2a;
+  font-size: clamp(22px, 2.8vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.public-cta-card p {
+  max-width: 600px;
+  margin: 0;
+  color: #66726b;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.public-footer {
+  padding: 32px 0;
+  background: #131f18;
+  color: #ffffff;
+}
+
+.public-footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 0.8fr;
+  gap: 32px;
+}
+
+.public-footer-brand > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.public-footer-brand img {
+  width: 40px;
+  height: 32px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Judul kolom footer */
+.public-footer strong {
+  display: block;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.public-footer p {
+  max-width: 360px;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Link / item footer */
+.public-footer span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Divider bawah footer */
+.public-footer-bottom {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+  .public-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .public-card-grid.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .public-navbar {
+    padding: 0 20px;
+  }
+
+  .public-menu-button {
+    display: grid;
+  }
+
+  /* Nav dropdown mobile */
+  .public-nav {
+    position: absolute;
+    top: 64px;
+    left: 16px;
+    right: 16px;
+    padding: 12px;
+    border: 1px solid #e4ebe1;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 12px 32px rgba(30, 40, 35, 0.12);
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .public-nav.open {
+    display: flex;
+  }
+
+  .public-nav button {
+    text-align: left;
+    padding: 10px 14px;
+  }
+
+  .public-nav button.active::after {
+    bottom: 50%;
+    left: 8px;
+    transform: translateY(50%);
+    width: 3px;
+    height: 18px;
+    border-radius: 999px;
+  }
+
+  /* Sembunyikan tombol Masuk di navbar saat mobile — ada di nav dropdown */
+  .public-login-button {
+    display: none;
+  }
+
+  .public-hero {
+    padding: 40px 0 32px;
+  }
+
+  .public-card-grid.three,
+  .public-card-grid.four,
+  .public-footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .public-hero-actions,
+  .public-cta-card {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .public-primary-button,
+  .public-secondary-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .public-section {
+    padding: 40px 0;
+  }
+
+  .public-cta-section {
+    padding: 28px 0 44px;
+  }
+
+  .public-cta-card {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 520px) {
+  .public-container {
+    width: min(100%, calc(100% - 28px));
+  }
+
+  .public-navbar {
+    padding: 0 16px;
+  }
+
+  .public-brand {
+    font-size: 16px;
+  }
+
+  .public-brand img {
+    width: 36px;
+    height: 28px;
+  }
+
+  .public-hero-content h1 {
+    font-size: 32px;
+    letter-spacing: -0.8px;
+  }
+
+  .public-hero-content p {
+    font-size: 14px;
+  }
+
+  .public-flow-card > div {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .public-flow-card svg {
+    display: none;
+  }
+
+  .public-dashboard-card {
+    padding: 18px;
+  }
 }
