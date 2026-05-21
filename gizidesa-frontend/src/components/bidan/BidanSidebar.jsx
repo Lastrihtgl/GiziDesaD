@@ -1,43 +1,61 @@
 import {
-  ClipboardList,
+  ClipboardCheck,
+  FileCheck2,
+  HeartPulse,
   Home,
   LogOut,
   MapPin,
-  Sprout,
-  UsersRound,
+  Salad,
+  Stethoscope,
+  TrendingUp,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import logoGiziDesa from "../../assets/logo-gizidesa.jpeg";
 import { clearAuthData } from "../../utils/authStorage";
 
-function KaderSidebar() {
+function BidanSidebar() {
   const navigate = useNavigate();
 
   const menuItems = [
     {
       label: "Dashboard",
-      path: "/kader/dashboard",
+      path: "/bidan/dashboard",
       icon: Home,
     },
     {
-      label: "Input Data RT",
-      path: "/kader/input-data-rt",
-      icon: ClipboardList,
+      label: "Validasi Data",
+      path: "/bidan/validasi-data",
+      icon: FileCheck2,
     },
     {
-      label: "Data Warga",
-      path: "/kader/data-warga",
-      icon: UsersRound,
+      label: "Monitor ANC",
+      path: "/bidan/monitor-anc",
+      icon: HeartPulse,
+    },
+    {
+      label: "Rekomendasi",
+      path: "/bidan/rekomendasi",
+      icon: ClipboardCheck,
+    },
+    {
+      label: "Tindak Lanjut",
+      path: "/bidan/tindak-lanjut",
+      icon: Stethoscope,
     },
     {
       label: "Peta Risiko",
-      path: "/kader/peta-risiko",
+      path: "/bidan/peta-risiko",
       icon: MapPin,
     },
     {
-      label: "Edukasi Pangan",
-      path: "/kader/edukasi-pangan",
-      icon: Sprout,
+      label: "Pangan Lokal",
+      path: "/bidan/pangan-lokal",
+      icon: Salad,
+    },
+    {
+      label: "Tracking",
+      path: "/bidan/tracking",
+      icon: TrendingUp,
     },
   ];
 
@@ -50,20 +68,20 @@ function KaderSidebar() {
     <aside className="admin-sidebar">
       <button
         type="button"
-        className="admin-brand-block gizidesa-brand-block"
-        onClick={() => navigate("/kader/dashboard")}
+        className="admin-brand-block"
+        onClick={() => navigate("/bidan/dashboard")}
       >
         <div className="gizidesa-sidebar-logo">
-          <img src={logoGiziDesa} alt="Logo GiziDesa" />
+        <img src={logoGiziDesa} alt="Logo GiziDesa" />
         </div>
 
         <div className="gizidesa-sidebar-title">
-          <strong>Kader Desa</strong>
-          <small>Pencatatan data lapangan</small>
+        <strong>Bidan Desa</strong>
+        <small>Monitoring kesehatan wilayah</small>
         </div>
       </button>
 
-      <nav className="admin-menu" aria-label="Menu Kader">
+      <nav className="admin-menu">
         {menuItems.map((item) => {
           const Icon = item.icon;
 
@@ -82,16 +100,12 @@ function KaderSidebar() {
         })}
       </nav>
 
-      <button
-        type="button"
-        className="admin-logout-button"
-        onClick={handleLogout}
-      >
+      <button type="button" className="admin-logout-button" onClick={handleLogout}>
         <LogOut size={18} />
-        <span>Keluar</span>
+        Keluar
       </button>
     </aside>
   );
 }
 
-export default KaderSidebar;
+export default BidanSidebar;

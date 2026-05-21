@@ -22,6 +22,13 @@ import AdminAnalitikPage from "../pages/admin/analitik/AdminAnalitikPage";
 import AdminTimPage from "../pages/admin/tim/AdminTimPage";
 
 import BidanDashboard from "../pages/bidan/BidanDashboard";
+import ValidasiData from "../pages/bidan/ValidasiData";
+import MonitorAnc from "../pages/bidan/MonitorAnc";
+import RekomendasiBidan from "../pages/bidan/RekomendasiBidan";
+import TindakLanjut from "../pages/bidan/TindakLanjut";
+import PetaRisikoBidan from "../pages/bidan/PetaRisikoBidan";
+import PanganLokalBidan from "../pages/bidan/PanganLokalBidan";
+import TrackingIntervensiBidan from "../pages/bidan/TrackingIntervensiBidan";
 
 import KaderDashboard from "../pages/kader/KaderDashboard";
 import InputDataRT from "../pages/kader/InputDataRT";
@@ -248,76 +255,76 @@ function AppRoutes() {
 
       {/* BIDAN */}
       <Route
-        path="/bidan/dashboard"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+  path="/bidan/dashboard"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <BidanDashboard />
+    </ProtectedRoute>
+  }
+/>
 
-      <Route
-        path="/bidan/peta-risiko"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+<Route
+  path="/bidan/validasi-data"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <ValidasiData />
+    </ProtectedRoute>
+  }
+/>
 
-      <Route
-        path="/bidan/tindak-lanjut"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+<Route
+  path="/bidan/monitor-anc"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <MonitorAnc />
+    </ProtectedRoute>
+  }
+/>
 
-      <Route
-        path="/bidan/rekomendasi"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+<Route
+  path="/bidan/rekomendasi"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <RekomendasiBidan />
+    </ProtectedRoute>
+  }
+/>
 
-      <Route
-        path="/bidan/validasi-data"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+<Route
+  path="/bidan/tindak-lanjut"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <TindakLanjut />
+    </ProtectedRoute>
+  }
+/>
 
-      <Route
-        path="/bidan/monitor-anc"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+<Route
+  path="/bidan/peta-risiko"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <PetaRisikoBidan />
+    </ProtectedRoute>
+  }
+/>
 
-      <Route
-        path="/bidan/pangan-lokal"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+<Route
+  path="/bidan/pangan-lokal"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <PanganLokalBidan />
+    </ProtectedRoute>
+  }
+/>
 
-      <Route
-        path="/bidan/tracking"
-        element={
-          <ProtectedRoute allowedRoles={["bidan"]}>
-            <BidanDashboard />
-          </ProtectedRoute>
-        }
-      />
+<Route
+  path="/bidan/tracking"
+  element={
+    <ProtectedRoute allowedRoles={["bidan"]}>
+      <TrackingIntervensiBidan />
+    </ProtectedRoute>
+  }
+/>
 
       {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />

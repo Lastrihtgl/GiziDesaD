@@ -1,371 +1,171 @@
 import {
-	Bell,
-	CalendarDays,
-	ChevronRight,
-	ClipboardList,
-	FlaskConical,
-	HeartPulse,
-	LayoutDashboard,
-	Lightbulb,
-	LogOut,
-	MapPinned,
-	NotebookPen,
-	ShieldCheck,
-	Trees,
-	Droplets,
-	Stethoscope,
-	Wallet,
+  AlertTriangle,
+  CalendarCheck,
+  CheckCircle2,
+  HeartPulse,
+  MapPin,
+  Stethoscope,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import BidanLayout from "../../layouts/BidanLayout";
+import {
+  getAncData,
+  getTindakLanjutData,
+  getValidasiData,
+  rekomendasiBidan,
+} from "../../utils/bidanStorage";
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("id-ID").format(value || 0);
+}
 
 function BidanDashboard() {
-	const navigate = useNavigate();
-	const location = useLocation();
+  const validasiData = getValidasiData();
+  const ancData = getAncData();
+  const tindakLanjut = getTindakLanjutData();
 
-	const summaryCards = [
-		{ label: "RT Prioritas", value: "6", color: "is-red" },
-		{ label: "RT Risiko Tinggi", value: "3", color: "is-amber" },
-		{ label: "Pendampingan Aktif", value: "8", color: "is-green" },
-		{ label: "Intervensi Bulan Ini", value: "14", color: "is-green" },
-	];
+  const totalKek = ancData.filter((item) => item.status_kek === "kek").length;
+  const totalAncTidakRutin = ancData.filter(
+    (item) => item.anc_status === "tidak_rutin"
+  ).length;
+  const totalTindakSelesai = tindakLanjut.filter(
+    (item) => item.status === "selesai"
+  ).length;
+  const prioritas = ancData.filter((item) => item.prioritas !== "rendah");
 
-	const menuItems = [
-		{ label: "Dashboard", icon: LayoutDashboard, path: "/bidan/dashboard" },
-		{ label: "Peta Prioritas", icon: MapPinned, path: "/bidan/peta-risiko" },
-		{ label: "Tindak Lanjut", icon: NotebookPen, path: "/bidan/tindak-lanjut" },
-		{ label: "Rekomendasi", icon: Lightbulb, path: "/bidan/rekomendasi" },
-	];
+  return (
+    <BidanLayout
+      title="Dashboard Bidan"
+      subtitle="Memantau kondisi ibu hamil, ANC, KEK, dan tindak lanjut kesehatan wilayah."
+    >
+      <section className="admin-overview-grid risiko-overview">
+        <article className="admin-metric-card">
+          <span>Data Validasi</span>
+          <strong>{formatNumber(validasiData.length)}</strong>
+          <p>Data sasaran masuk</p>
+        </article>
 
-	const rtMap = [
-		{
-			name: "RT 03",
-			score: 85,
-			status: "Risiko Tinggi",
-			color: "is-red",
-			factors: ["ANC rendah", "Sanitasi buruk"],
-		},
-		{
-			name: "RT 05",
-			score: 72,
-			status: "Risiko Tinggi",
-			color: "is-red",
-			factors: ["Akses layanan rendah", "Ekonomi rentan"],
-		},
-		{
-			name: "RT 08",
-			score: 66,
-			status: "Risiko Sedang",
-			color: "is-amber",
-			factors: ["Pangan lokal terbatas", "Air bersih terbatas"],
-		},
-	];
+        <article className="admin-metric-card danger">
+          <span>Ibu Hamil KEK</span>
+          <strong>{formatNumber(totalKek)}</strong>
+          <p>Perlu perhatian gizi</p>
+        </article>
 
-	const interventionLog = [
-		{
-			title: "Kunjungan ANC rumah Ibu Maya",
-			meta: "RT 03 • 20 Mei 2026",
-			action: "Edukasi ANC + jadwal kontrol puskesmas",
-			status: "Selesai",
-		},
-		{
-			title: "Pemantauan sanitasi keluarga rentan",
-			meta: "RT 05 • 19 Mei 2026",
-			action: "Koordinasi perbaikan jamban dengan kader",
-			status: "Berjalan",
-		},
-		{
-			title: "Edukasi menu ibu hamil berbasis pangan lokal",
-			meta: "RT 08 • 18 Mei 2026",
-			action: "Sosialisasi ikan jurung dan daun kelor",
-			status: "Selesai",
-		},
-	];
+        <article className="admin-metric-card trend">
+          <span>ANC Tidak Rutin</span>
+          <strong>{formatNumber(totalAncTidakRutin)}</strong>
+          <p>Butuh pemantauan</p>
+        </article>
 
-	const autoRecommendations = [
-		{
-			title: "RT 03 - ANC Rendah + Sanitasi Buruk",
-			recommendation: "Prioritaskan kunjungan bidan mingguan, edukasi ANC, dan rujukan perbaikan sanitasi rumah tangga.",
-			icon: Stethoscope,
-		},
-		{
-			title: "RT 05 - Ekonomi Rentan + Akses Layanan Rendah",
-			recommendation: "Gabungkan layanan ANC keliling dengan dukungan bantuan pangan ibu hamil dari desa.",
-			icon: Wallet,
-		},
-		{
-			title: "RT 08 - Pangan Lokal Terbatas",
-			recommendation: "Lakukan edukasi gizi dengan pangan lokal yang tersedia dan pemantauan konsumsi mingguan.",
-			icon: Trees,
-		},
-	];
+        <article className="admin-metric-card success">
+          <span>Intervensi Selesai</span>
+          <strong>{formatNumber(totalTindakSelesai)}</strong>
+          <p>Dari {formatNumber(tindakLanjut.length)} tindak lanjut</p>
+        </article>
+      </section>
 
-	const path = location.pathname;
-	const activeLabel = menuItems.find((item) => path.startsWith(item.path))?.label || "Dashboard";
+      <section className="admin-panel bidan-hero-card">
+        <div className="bidan-hero-content">
+          <div>
+            <span>Fokus Bidan Desa</span>
+            <h2>Pemantauan Kesehatan Ibu dan Sasaran Risiko</h2>
+            <p>
+              Halaman bidan membantu membaca data risiko, memvalidasi sasaran,
+              memantau ANC, serta mencatat tindak lanjut kesehatan di wilayah
+              prioritas.
+            </p>
+          </div>
 
- 	const isDashboard = path === "/bidan/dashboard" || path === "/bidan/peta-risiko";
-	const isTindakLanjut = path === "/bidan/tindak-lanjut";
-	const isRekomendasi = path === "/bidan/rekomendasi";
+          <div className="bidan-hero-summary">
+            <HeartPulse size={22} />
+            <div>
+              <strong>{formatNumber(prioritas.length)} Sasaran Prioritas</strong>
+              <p>
+                Sasaran dengan KEK, ANC tidak rutin, atau wilayah risiko perlu
+                dipantau lebih awal.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-	function renderPriorityPanel() {
-		const detail = rtMap[0];
+      <section className="bidan-grid-2">
+        <article className="admin-panel">
+          <div className="bidan-section-heading">
+            <span>Prioritas Hari Ini</span>
+            <h2>Sasaran Perlu Pemantauan</h2>
+            <p>Daftar sasaran yang perlu diperhatikan oleh bidan desa.</p>
+          </div>
 
-		return (
-			<section className="bidan-map-layout">
-				<article className="bidan-card bidan-panel bidan-map-panel">
-					<header className="bidan-panel-head">
-						<h2>
-							<MapPinned size={18} /> Dashboard Prioritas Wilayah
-						</h2>
-					</header>
-					<div className="bidan-map-grid">
-						{rtMap.map((item) => (
-							<div key={item.name} className={`bidan-map-chip ${item.color}`}>
-								<strong>{item.name}</strong>
-								<span>{item.score}</span>
-							</div>
-						))}
-					</div>
-					<div className="bidan-map-legend">
-						<span className="is-red">Merah: 71-100</span>
-						<span className="is-amber">Kuning: 41-70</span>
-						<span className="is-green">Hijau: 0-40</span>
-					</div>
-				</article>
+          <div className="bidan-list">
+            {prioritas.map((item) => (
+              <div className="bidan-list-item" key={item.id}>
+                <div className={`bidan-icon ${item.prioritas}`}>
+                  <AlertTriangle size={18} />
+                </div>
 
-				<aside className="bidan-card bidan-panel bidan-factor-panel">
-					<header className="bidan-panel-head">
-						<h2>
-							<FlaskConical size={18} /> Detail Faktor Dominan
-						</h2>
-					</header>
-					<div className="bidan-factor-detail">
-						<strong>{detail.name} - {detail.status}</strong>
-						<p>IRS {detail.score}/100</p>
-						<ul>
-							{detail.factors.map((factor) => (
-								<li key={factor}>{factor}</li>
-							))}
-						</ul>
-					</div>
-					<button type="button" className="bidan-button is-approve" onClick={() => navigate("/bidan/tindak-lanjut")}>
-						Catat Tindak Lanjut
-					</button>
-				</aside>
-			</section>
-		);
-	}
+                <div>
+                  <strong>{item.nama}</strong>
+                  <small>
+                    {item.wilayah} · LILA {item.lila} cm ·{" "}
+                    {item.anc_status === "tidak_rutin"
+                      ? "ANC tidak rutin"
+                      : "ANC rutin"}
+                  </small>
+                </div>
 
-	function renderTindakLanjutPanel() {
-		return (
-			<>
-				<section className="bidan-card bidan-panel">
-					<header className="bidan-panel-head">
-						<h2>
-							<NotebookPen size={18} /> Catat Tindak Lanjut Pendampingan
-						</h2>
-					</header>
-					<div className="bidan-followup-form">
-						<label>
-							<span>RT / Wilayah Prioritas</span>
-							<input type="text" placeholder="Contoh: RT 03 Dusun A" />
-						</label>
-						<label>
-							<span>Nama Ibu Hamil / Keluarga</span>
-							<input type="text" placeholder="Contoh: Ibu Maya" />
-						</label>
-						<label>
-							<span>Tindak Lanjut yang Dilakukan</span>
-							<textarea rows={3} placeholder="Contoh: Edukasi ANC, jadwal kunjungan ulang, koordinasi kader" />
-						</label>
-						<div className="bidan-validation-actions">
-							<button type="button" className="bidan-button is-outline">Simpan Draft</button>
-							<button type="button" className="bidan-button is-approve">Simpan Riwayat</button>
-						</div>
-					</div>
-				</section>
+                <b>{item.prioritas}</b>
+              </div>
+            ))}
+          </div>
+        </article>
 
-				<section className="bidan-card bidan-panel">
-					<header className="bidan-panel-head">
-						<h2>
-							<ClipboardList size={18} /> Riwayat Intervensi
-						</h2>
-					</header>
-					<div className="bidan-intervensi-list">
-						{interventionLog.map((item) => (
-							<article key={item.title} className="bidan-intervensi-item">
-								<div className="bidan-intervensi-head">
-									<div>
-										<strong>{item.title}</strong>
-										<p>{item.meta}</p>
-										<small>{item.action}</small>
-									</div>
-									<span className={`bidan-badge ${item.status === "Selesai" ? "is-green" : "is-amber"}`}>{item.status}</span>
-								</div>
-							</article>
-						))}
-					</div>
-				</section>
-			</>
-		);
-	}
+        <article className="admin-panel">
+          <div className="bidan-section-heading">
+            <span>Rekomendasi Awal</span>
+            <h2>Arah Tindak Lanjut</h2>
+            <p>Rekomendasi berbasis faktor dominan risiko wilayah.</p>
+          </div>
 
-	function renderRecommendationPanel() {
-		return (
-			<>
-				<section className="bidan-card bidan-panel">
-					<header className="bidan-panel-head">
-						<h2>Daftar Intervensi</h2>
-					</header>
-					<div className="bidan-recommendation-list">
-						{autoRecommendations.map((item) => {
-							const Icon = item.icon;
+          <div className="bidan-list">
+            {rekomendasiBidan.slice(0, 3).map((item) => (
+              <div className="bidan-list-item" key={item.id}>
+                <div className={`bidan-icon ${item.prioritas}`}>
+                  <MapPin size={18} />
+                </div>
 
-							return (
-								<article key={item.title} className="bidan-recommendation-item">
-									<div className="bidan-recommendation-head">
-										<Icon size={18} />
-										<strong>{item.title}</strong>
-									</div>
-									<p>{item.recommendation}</p>
-									<button type="button" className="bidan-button is-outline">Gunakan Sebagai Rencana Kunjungan</button>
-								</article>
-							);
-						})}
-					</div>
-				</section>
+                <div>
+                  <strong>{item.wilayah}</strong>
+                  <small>{item.faktor}</small>
+                </div>
 
-				<section className="bidan-card bidan-achievement-panel">
-					<header className="bidan-panel-head">
-						<h2>Dasar Rule yang Digunakan</h2>
-					</header>
-					<div className="bidan-achievement-grid">
-						<article>
-							<strong>ANC</strong>
-							<span>Kepatuhan ANC rendah - prioritas kunjungan bidan</span>
-						</article>
-						<article>
-							<strong>Sanitasi</strong>
-							<span>Sanitasi buruk - edukasi PHBS + koordinasi desa</span>
-						</article>
-						<article>
-							<strong>Pangan</strong>
-							<span>Pangan lokal terbatas - edukasi menu bergizi lokal</span>
-						</article>
-					</div>
-				</section>
-			</>
-		);
-	}
+                <b>{item.prioritas}</b>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
 
-	function renderPlaceholder(title, subtitle) {
-		return (
-			<section className="bidan-card bidan-placeholder">
-				<h2>{title}</h2>
-				<p>{subtitle}</p>
-			</section>
-		);
-	}
+      <section className="bidan-grid-3">
+        <article className="bidan-mini-card">
+          <CalendarCheck size={20} />
+          <strong>Validasi Data</strong>
+          <p>Periksa data sasaran dari kader sebelum tindak lanjut.</p>
+        </article>
 
-	function renderMainContent() {
-		if (isDashboard) {
-			return renderPriorityPanel();
-		}
+        <article className="bidan-mini-card">
+          <Stethoscope size={20} />
+          <strong>Tindak Lanjut</strong>
+          <p>Catat kunjungan, edukasi, rujukan, atau hasil pemantauan.</p>
+        </article>
 
-		if (isTindakLanjut) {
-			return renderTindakLanjutPanel();
-		}
-
-		if (isRekomendasi) {
-			return renderRecommendationPanel();
-		}
-
-		return renderPlaceholder("Halaman Bidan", "Pilih menu bidan untuk melihat dashboard prioritas, tindak lanjut, atau rekomendasi otomatis.");
-	}
-
-	return (
-		<section className="bidan-shell">
-			<aside className="bidan-sidebar">
-				<div>
-					<div className="bidan-brand">
-						<span className="bidan-brand-mark">G</span>
-						<strong>GiziDesa</strong>
-					</div>
-
-					<div className="bidan-role-card">
-						<span>Anda masuk sebagai</span>
-						<strong>Bidan Desa</strong>
-						<small>Desa Pangururan</small>
-					</div>
-
-					<nav className="bidan-nav">
-						{menuItems.map((item) => {
-							const Icon = item.icon;
-							const isActive = path.startsWith(item.path);
-
-							return (
-								<button
-									key={item.path}
-									type="button"
-									className={isActive ? "active" : ""}
-									onClick={() => navigate(item.path)}
-								>
-									<Icon size={16} />
-									<span>{item.label}</span>
-									{isActive ? <ChevronRight size={16} /> : null}
-								</button>
-							);
-						})}
-					</nav>
-				</div>
-
-				<button type="button" className="bidan-logout">
-					<LogOut size={16} />
-					Keluar
-				</button>
-			</aside>
-
-			<main className="bidan-main">
-				<header className="bidan-topbar">
-					<div />
-					<div className="bidan-topbar-actions">
-						<button type="button" className="bidan-icon-button" aria-label="Notifikasi">
-							<Bell size={16} />
-						</button>
-						<div className="bidan-user-chip">
-							<div>
-								<strong>a</strong>
-								<span>Bidan Desa</span>
-							</div>
-							<span className="bidan-avatar">A</span>
-						</div>
-					</div>
-				</header>
-
-				<section className="bidan-header">
-					<h1>{isTindakLanjut ? "Tindak Lanjut Pendampingan" : isRekomendasi ? "Rekomendasi Intervensi Otomatis" : "Dashboard Bidan Desa"}</h1>
-					<p>
-						{isTindakLanjut
-							? "Catat riwayat intervensi setelah kunjungan agar perubahan kondisi dapat dipantau periode berikutnya."
-							: isRekomendasi
-								? "Sistem men-generate saran intervensi berbasis faktor risiko dominan per RT."
-								: "Baca prioritas wilayah berdasarkan IRS dan fokuskan kunjungan ke RT berisiko tertinggi."}
-					</p>
-					{!isDashboard ? <span className="bidan-page-pill">{activeLabel}</span> : null}
-				</section>
-
-				<section className="bidan-summary-grid">
-					{summaryCards.map((item) => (
-						<article key={item.label} className="bidan-card bidan-summary-card">
-							<strong className={item.color}>{item.value}</strong>
-							<span>{item.label}</span>
-						</article>
-					))}
-				</section>
-
-				{renderMainContent()}
-			</main>
-		</section>
-	);
+        <article className="bidan-mini-card">
+          <CheckCircle2 size={20} />
+          <strong>Tracking</strong>
+          <p>Pantau progres intervensi sampai status selesai.</p>
+        </article>
+      </section>
+    </BidanLayout>
+  );
 }
 
 export default BidanDashboard;

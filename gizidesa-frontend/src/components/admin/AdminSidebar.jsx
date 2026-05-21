@@ -3,7 +3,6 @@ import {
   Calculator,
   FileText,
   LayoutDashboard,
-  Leaf,
   Lightbulb,
   LogOut,
   MapPin,
@@ -12,6 +11,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
+import logoGiziDesa from "../../assets/logo-gizidesa.jpeg";
 import { clearAuthData } from "../../utils/authStorage";
 
 function AdminSidebar() {
@@ -79,16 +79,16 @@ function AdminSidebar() {
     <aside className="admin-sidebar">
       <button
         type="button"
-        className="admin-brand-block"
+        className="admin-brand-block gizidesa-brand-block"
         onClick={() => navigate("/admin/dashboard")}
       >
-        <span className="admin-brand-logo">
-          <Leaf size={25} />
-        </span>
+        <div className="gizidesa-sidebar-logo">
+          <img src={logoGiziDesa} alt="Logo GiziDesa" />
+        </div>
 
-        <div>
-          <strong>GiziDesa</strong>
-          <small>Admin Desa</small>
+        <div className="gizidesa-sidebar-title">
+          <strong>Admin Desa</strong>
+          <small>Pengelolaan data GiziDesa</small>
         </div>
       </button>
 
