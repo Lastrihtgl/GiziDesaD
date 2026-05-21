@@ -5,7 +5,7 @@ import {
   FileText,
   Search,
 } from "lucide-react";
-import html2pdf from "html2pdf.js";
+import { jsPDF } from "jspdf";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getDataRisikoList } from "../../../api/dataRisikoApi";
 import { getIntervensiList } from "../../../api/intervensiApi";
@@ -249,7 +249,7 @@ function AdminLaporanPage() {
 
   useEffect(() => {
     if (!errorMessage) {
-      return;
+      return undefined;
     }
 
     const timer = setTimeout(() => {
@@ -470,54 +470,420 @@ function AdminLaporanPage() {
     },
   ];
 
-  const handleDownloadPdf = async () => {
-    if (!pdfRef.current || downloadingPdf) {
-      return;
-    }
+const handleDownloadPdf = async () => {
+  if (downloadingPdf) {
+    return;
+  }
 
-    try {
-      setDownloadingPdf(true);
+  try {
+    setDownloadingPdf(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 120));
+    const fileName = `laporan-gizidesa-${sanitizeFilename(
+      reportPeriodLabel
+    )}.pdf`;
 
-      const fileName = `laporan-gizidesa-${sanitizeFilename(
-        reportPeriodLabel
-      )}.pdf`;
+    const doc = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4",
+      compress: true,
+    });
 
-      const options = {
-        margin: [7, 7, 7, 7],
-        filename: fileName,
-        image: {
-          type: "jpeg",
-          quality: 0.98,
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const margin = 12;
+    const contentWidth = pageWidth - margin * 2;
+
+    let y = 14;
+
+    const colors = {
+      primary: [22, 101, 52],
+      primarySoft: [232, 243, 235],
+      border: [214, 223, 216],
+      textDark: [28, 43, 35],
+      textMuted: [98, 111, 103],
+      rowAlt: [248, 250, 248],
+      white: [255, 255, 255],
+    };
+
+    const addFooter = () => {
+      doc.setDrawColor(...colors.border);
+      doc.line(margin, pageHeight - 12, pageWidth - margin, pageHeight - 12);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(...colors.textMuted);
+      doc.text(
+        `Dicetak otomatis oleh Sistem GiziDesa pada ${new Date().toLocaleString(
+          "id-ID"
+        )}`,
+        pageWidth - margin,
+        pageHeight - 6.5,
+        { align: "right" }
+      );
+    };
+
+    const addNewPage = () => {
+      addFooter();
+      doc.addPage();
+      y = 14;
+    };
+
+    const ensureSpace = (neededHeight = 20) => {
+      if (y + neededHeight > pageHeight - 18) {
+        addNewPage();
+      }
+    };
+
+    const drawHeader = () => {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(...colors.primary);
+      doc.text("LAPORAN PROGRAM", margin, y);
+
+      y += 7;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(...colors.textDark);
+      doc.text("Ringkasan Risiko dan Intervensi GiziDesa", margin, y);
+
+      y += 7;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(...colors.textMuted);
+      doc.text(`Periode laporan: ${reportPeriodLabel}`, margin, y);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(...colors.textDark);
+      doc.text("GiziDesa", pageWidth - margin, 18, { align: "right" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(...colors.textMuted);
+      doc.text(new Date().toLocaleString("id-ID"), pageWidth - margin, 24, {
+        align: "right",
+      });
+
+      y += 5;
+
+      doc.setDrawColor(...colors.border);
+      doc.line(margin, y, pageWidth - margin, y);
+
+      y += 8;
+    };
+
+    const drawSectionTitle = (title) => {
+      ensureSpace(12);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      doc.setTextColor(...colors.primary);
+      doc.text(title.toUpperCase(), margin, y);
+
+      y += 7;
+    };
+
+    const drawSummaryCards = () => {
+      ensureSpace(34);
+
+      const gap = 4;
+      const cardWidth = (contentWidth - gap * 3) / 4;
+      const cardHeight = 23;
+      const startY = y;
+
+      const cards = [
+        {
+          label: "Total Data Risiko",
+          value: formatNumber(totalDataRisiko),
+          note: `Data IRS pada ${reportPeriodLabel}`,
         },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: "#ffffff",
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: 1122,
+        {
+          label: "Risiko Tinggi",
+          value: formatNumber(totalTinggi),
+          note: "Wilayah prioritas utama",
         },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "landscape",
-          compress: true,
+        {
+          label: "Risiko Sedang",
+          value: formatNumber(totalSedang),
+          note: "Wilayah perlu pemantauan",
         },
-        pagebreak: {
-          mode: ["css", "legacy"],
-          avoid: [".pdf-avoid-break", ".pdf-summary-card"],
+        {
+          label: "Risiko Rendah",
+          value: formatNumber(totalRendah),
+          note: "Kondisi relatif terkendali",
         },
+      ];
+
+      cards.forEach((card, index) => {
+        const x = margin + index * (cardWidth + gap);
+
+        doc.setFillColor(...colors.rowAlt);
+        doc.setDrawColor(...colors.border);
+        doc.roundedRect(x, startY, cardWidth, cardHeight, 2.5, 2.5, "FD");
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...colors.textMuted);
+        doc.text(card.label, x + 4, startY + 6.5);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.setTextColor(...colors.textDark);
+        doc.text(String(card.value), x + 4, startY + 14);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(...colors.textMuted);
+        doc.text(card.note, x + 4, startY + 20);
+      });
+
+      y += cardHeight + 8;
+    };
+
+    const drawInfoTable = (rows) => {
+      const colWidths = [
+        contentWidth * 0.25,
+        contentWidth * 0.25,
+        contentWidth * 0.25,
+        contentWidth * 0.25,
+      ];
+
+      rows.forEach((row) => {
+        ensureSpace(10);
+
+        let x = margin;
+        const rowHeight = 10;
+
+        row.forEach((cell, index) => {
+          const isLabel = index % 2 === 0;
+
+          doc.setFillColor(...(isLabel ? colors.primarySoft : colors.white));
+          doc.setDrawColor(...colors.border);
+          doc.rect(x, y, colWidths[index], rowHeight, "FD");
+
+          doc.setFont("helvetica", isLabel ? "bold" : "normal");
+          doc.setFontSize(9);
+          doc.setTextColor(...(isLabel ? colors.textDark : colors.textDark));
+          doc.text(String(cell), x + 3, y + 6.3, {
+            maxWidth: colWidths[index] - 6,
+          });
+
+          x += colWidths[index];
+        });
+
+        y += rowHeight;
+      });
+
+      y += 6;
+    };
+
+    const drawTable = (headers, rows, colWidths) => {
+      const headerHeight = 9.5;
+
+      const drawTableHeader = () => {
+        let x = margin;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...colors.textDark);
+
+        headers.forEach((header, index) => {
+          doc.setFillColor(...colors.primarySoft);
+          doc.setDrawColor(...colors.border);
+          doc.rect(x, y, colWidths[index], headerHeight, "FD");
+
+          doc.text(String(header), x + 2.5, y + 6, {
+            maxWidth: colWidths[index] - 5,
+          });
+
+          x += colWidths[index];
+        });
+
+        y += headerHeight;
       };
 
-      await html2pdf().set(options).from(pdfRef.current).save();
-    } catch (error) {
-      setErrorMessage("PDF gagal diunduh. Silakan coba kembali.");
-    } finally {
-      setDownloadingPdf(false);
-    }
-  };
+      ensureSpace(14);
+      drawTableHeader();
+
+      rows.forEach((row, rowIndex) => {
+        const splitCells = row.map((cell, index) =>
+          doc.splitTextToSize(String(cell ?? "-"), colWidths[index] - 5)
+        );
+
+        const maxLines = Math.max(...splitCells.map((cell) => cell.length));
+        const rowHeight = Math.max(10, maxLines * 4.6 + 4);
+
+        if (y + rowHeight > pageHeight - 18) {
+          addNewPage();
+          drawTableHeader();
+        }
+
+        let x = margin;
+
+        splitCells.forEach((cellLines, index) => {
+          doc.setFillColor(...(rowIndex % 2 === 0 ? colors.white : colors.rowAlt));
+          doc.setDrawColor(...colors.border);
+          doc.rect(x, y, colWidths[index], rowHeight, "FD");
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.4);
+          doc.setTextColor(...colors.textDark);
+          doc.text(cellLines, x + 2.5, y + 5.5, {
+            maxWidth: colWidths[index] - 5,
+          });
+
+          x += colWidths[index];
+        });
+
+        y += rowHeight;
+      });
+
+      y += 7;
+    };
+
+    drawHeader();
+
+    drawSectionTitle("Ringkasan Risiko");
+    drawSummaryCards();
+
+    drawSectionTitle("Indikator Utama");
+    drawInfoTable([
+      [
+        "Rata-rata Skor IRS",
+        averageIrs.toFixed(2),
+        "Total Ibu Hamil",
+        formatNumber(totalIbuHamil),
+      ],
+      [
+        "Ibu Hamil KEK",
+        formatNumber(totalKek),
+        "ANC Tidak Rutin",
+        formatNumber(totalAncTidakRutin),
+      ],
+      [
+        "Total Intervensi",
+        formatNumber(totalIntervensi),
+        "Intervensi Selesai",
+        `${formatNumber(totalIntervensiSelesai)} dari ${formatNumber(
+          totalIntervensi
+        )} (${completionRate}%)`,
+      ],
+    ]);
+
+    drawSectionTitle("Wilayah Risiko Tertinggi");
+
+    const priorityRows =
+      highestRiskList.length === 0
+        ? [["Belum ada data prioritas.", "-", "-", "-"]]
+        : highestRiskList.map((item) => [
+            `${item.wilayah?.nama_dusun || "-"} - ${
+              item.wilayah?.nama_rt || "-"
+            }`,
+            formatPeriodLabel(item.periode),
+            Number(item.skor_irs || 0).toFixed(2),
+            item.kategori_risiko || "-",
+          ]);
+
+    drawTable(
+      ["Wilayah", "Periode", "Skor IRS", "Kategori"],
+      priorityRows,
+      [78, 42, 32, 36]
+    );
+
+    drawSectionTitle("Distribusi Faktor Dominan");
+
+    const factorRows =
+      dominantFactors.length === 0
+        ? [["Belum ada faktor dominan.", "-", "-"]]
+        : dominantFactors.map((item) => {
+            const percentage =
+              totalDataRisiko === 0
+                ? 0
+                : Math.round((item.total / totalDataRisiko) * 100);
+
+            return [formatFactorLabel(item.factor), item.total, `${percentage}%`];
+          });
+
+    drawTable(
+      ["Faktor Dominan", "Jumlah", "Persentase"],
+      factorRows,
+      [110, 35, 40]
+    );
+
+    addNewPage();
+
+    drawSectionTitle("Detail Data Risiko Wilayah");
+
+    const risikoRows =
+      filteredRisiko.length === 0
+        ? [["Data laporan tidak ditemukan.", "-", "-", "-", "-", "-", "-", "-", "-"]]
+        : filteredRisiko.map((item) => [
+            `${item.wilayah?.nama_dusun || "-"} - ${
+              item.wilayah?.nama_rt || "-"
+            }`,
+            item.wilayah?.kode_wilayah || "-",
+            formatPeriodLabel(item.periode),
+            Number(item.skor_irs || 0).toFixed(2),
+            item.kategori_risiko || "-",
+            formatFactorLabel(item.faktor_dominan),
+            formatNumber(item.jumlah_ibu_hamil),
+            formatNumber(item.jumlah_ibu_hamil_kek),
+            truncateText(item.rekomendasi_awal, 85),
+          ]);
+
+    drawTable(
+      [
+        "Wilayah",
+        "Kode",
+        "Periode",
+        "IRS",
+        "Kategori",
+        "Faktor Dominan",
+        "Ibu Hamil",
+        "KEK",
+        "Rekomendasi Awal",
+      ],
+      risikoRows,
+      [33, 18, 22, 14, 18, 30, 16, 14, 73]
+    );
+
+    drawSectionTitle("Detail Tindak Lanjut Program");
+
+    const intervensiRows =
+      filteredIntervensi.length === 0
+        ? [["Belum ada intervensi terkait.", "-", "-", "-", "-", "-"]]
+        : filteredIntervensi.map((item) => [
+            `${item.wilayah?.nama_dusun || "-"} - ${
+              item.wilayah?.nama_rt || "-"
+            }`,
+            item.wilayah?.kode_wilayah || "-",
+            item.judul_intervensi || "-",
+            getJenisLabel(item.jenis_intervensi),
+            `${formatDate(item.tanggal_mulai)} s.d. ${formatDate(
+              item.tanggal_selesai
+            )}`,
+            getStatusLabel(item.status),
+          ]);
+
+    drawTable(
+      ["Wilayah", "Kode", "Intervensi", "Jenis", "Jadwal", "Status"],
+      intervensiRows,
+      [32, 18, 55, 36, 55, 28]
+    );
+
+    addFooter();
+    doc.save(fileName);
+  } catch (error) {
+    console.error("PDF download error:", error);
+    setErrorMessage("PDF gagal diunduh. Silakan coba kembali.");
+  } finally {
+    setDownloadingPdf(false);
+  }
+};
 
   return (
     <AdminLayout

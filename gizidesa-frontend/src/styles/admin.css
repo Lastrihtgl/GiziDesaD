@@ -2993,17 +2993,23 @@
 ========================= */
 
 .pdf-report-template {
-  position: fixed;
-  left: -99999px;
-  top: 0;
+  display: none;
   width: 1122px;
   min-height: 794px;
   background: #ffffff;
   color: #1f2933;
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  pointer-events: none;
-  opacity: 0;
-  z-index: -1;
+}
+
+.pdf-render-clone {
+  display: block !important;
+  width: 1122px !important;
+  min-height: 794px !important;
+  background: #ffffff !important;
+  color: #1f2933 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
 }
 
 .pdf-report-page {
@@ -4033,4 +4039,22 @@
     flex-direction: column-reverse;
     align-items: stretch;
   }
+}
+
+.pdf-report-template {
+  display: none !important;
+}
+
+.pdf-render-host {
+  width: 1122px !important;
+  min-height: 794px !important;
+  background: #ffffff !important;
+  color: #1f2933 !important;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.pdf-render-host * {
+  visibility: visible !important;
 }
