@@ -17,9 +17,12 @@ class WilayahController extends Controller
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
 
-                $query->where('nama_dusun', 'like', "%{$search}%")
-                    ->orWhere('nama_rt', 'like', "%{$search}%")
-                    ->orWhere('kode_wilayah', 'like', "%{$search}%");
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('nama_dusun', 'like', "%{$search}%")
+                        ->orWhere('nama_rt', 'like', "%{$search}%")
+                        ->orWhere('kode_wilayah', 'like', "%{$search}%")
+                        ->orWhere('keterangan', 'like', "%{$search}%");
+                });
             })
             ->orderBy('nama_dusun')
             ->orderBy('nama_rt')

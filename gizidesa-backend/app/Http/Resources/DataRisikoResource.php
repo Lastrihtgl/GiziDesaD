@@ -20,7 +20,8 @@ class DataRisikoResource extends JsonResource
                 'nama_dusun' => $this->wilayah?->nama_dusun,
                 'nama_rt' => $this->wilayah?->nama_rt,
                 'kode_wilayah' => $this->wilayah?->kode_wilayah,
-                'keterangan' => $this->wilayah?->keterangan,
+                'latitude' => $this->wilayah?->latitude !== null ? (float) $this->wilayah->latitude : null,
+                'longitude' => $this->wilayah?->longitude !== null ? (float) $this->wilayah->longitude : null,
             ],
 
             'periode' => $this->periode,

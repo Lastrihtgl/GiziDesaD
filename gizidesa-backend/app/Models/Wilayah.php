@@ -13,7 +13,14 @@ class Wilayah extends Model
         'nama_dusun',
         'nama_rt',
         'kode_wilayah',
+        'latitude',
+        'longitude',
         'keterangan',
+    ];
+
+    protected $casts = [
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
     ];
 
     public function dataRisiko(): HasMany

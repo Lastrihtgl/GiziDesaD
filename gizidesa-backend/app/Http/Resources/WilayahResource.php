@@ -14,6 +14,8 @@ class WilayahResource extends JsonResource
             'nama_dusun' => $this->nama_dusun,
             'nama_rt' => $this->nama_rt,
             'kode_wilayah' => $this->kode_wilayah,
+            'latitude' => $this->latitude !== null ? (float) $this->latitude : null,
+            'longitude' => $this->longitude !== null ? (float) $this->longitude : null,
             'keterangan' => $this->keterangan,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
