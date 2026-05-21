@@ -1,258 +1,384 @@
 import {
   ArrowRight,
   BarChart3,
-  CheckCircle2,
   ClipboardList,
   HeartPulse,
-  Leaf,
+  LineChart,
   MapPin,
+  Menu,
   ShieldCheck,
   Sprout,
   UsersRound,
+  X,
 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PublicLayout from "../../layouts/PublicLayout";
+import logoGiziDesa from "../../assets/logo-gizidesa.jpeg";
+import "../../styles/public.css";
 
 function HomePage() {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const highlights = [
+  const navItems = [
+    { label: "Beranda", target: "beranda" },
+    { label: "Masalah", target: "masalah" },
+    { label: "Fitur", target: "fitur" },
+    { label: "Pengguna", target: "pengguna" },
+  ];
+
+  const problemItems = [
     {
-      value: "6",
-      label: "Indikator Risiko",
-      description: "Sanitasi, air bersih, ibu hamil, ekonomi, akses layanan, dan pangan lokal.",
+      icon: ClipboardList,
+      title: "Data risiko belum terpusat",
+      description:
+        "Data lapangan sering tersebar sehingga sulit digunakan sebagai dasar keputusan desa.",
     },
     {
-      value: "IRS",
-      label: "Skor Otomatis",
-      description: "Data risiko dihitung menjadi kategori rendah, sedang, atau tinggi.",
+      icon: MapPin,
+      title: "Prioritas wilayah belum jelas",
+      description:
+        "Desa membutuhkan pemetaan risiko per RT/dusun agar tindak lanjut lebih terarah.",
     },
     {
-      value: "3",
-      label: "Peran Pengguna",
-      description: "Kader, bidan, dan admin desa bekerja sesuai fungsi masing-masing.",
-    },
-    {
-      value: "RT",
-      label: "Prioritas Wilayah",
-      description: "Risiko dipetakan per RT/dusun agar tindak lanjut lebih terarah.",
+      icon: LineChart,
+      title: "Tindak lanjut sulit dipantau",
+      description:
+        "Intervensi perlu dicatat agar progres pemantauan dapat dilihat kembali.",
     },
   ];
 
-  const features = [
+  const featureItems = [
     {
       icon: ClipboardList,
       title: "Input Data Risiko",
-      text: "Kader mengisi data indikator risiko per wilayah dengan form sederhana dan terstruktur.",
+      description:
+        "Kader mencatat indikator risiko berdasarkan kondisi RT/dusun.",
     },
     {
       icon: BarChart3,
       title: "Kalkulator IRS",
-      text: "Sistem menghitung skor risiko dan menampilkan kategori wilayah secara otomatis.",
+      description:
+        "Sistem menghitung skor dan kategori risiko secara otomatis.",
+    },
+    {
+      icon: MapPin,
+      title: "Peta Risiko",
+      description:
+        "Wilayah prioritas ditampilkan berdasarkan kategori rendah, sedang, dan tinggi.",
     },
     {
       icon: HeartPulse,
       title: "Tracking Intervensi",
-      text: "Bidan dan admin dapat mencatat tindak lanjut terhadap wilayah prioritas.",
+      description:
+        "Tindak lanjut dapat dicatat dan dipantau kembali oleh pihak terkait.",
     },
   ];
 
-  const roles = [
+  const userItems = [
     {
       icon: UsersRound,
       title: "Kader Posyandu",
-      text: "Mengumpulkan data lapangan dan melihat panduan edukasi pangan lokal.",
+      description:
+        "Menginput data risiko dan melihat panduan edukasi pangan lokal.",
     },
     {
       icon: HeartPulse,
       title: "Bidan Desa",
-      text: "Membaca risiko wilayah dan mencatat pendampingan atau kunjungan lanjutan.",
+      description:
+        "Memantau data kesehatan, membaca prioritas, dan mencatat tindak lanjut.",
     },
     {
       icon: ShieldCheck,
       title: "Admin Desa",
-      text: "Mengelola wilayah, referensi pangan lokal, intervensi, dan laporan.",
+      description:
+        "Mengelola wilayah, pengguna, data risiko, rekomendasi, dan laporan.",
     },
   ];
 
+  function scrollToSection(target) {
+    const section = document.getElementById(target);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    setIsMenuOpen(false);
+  }
+
   return (
-    <PublicLayout>
-      <section className="home-hero-section">
-        <div className="home-hero-content">
-          <span className="public-badge">
-            <Leaf size={15} />
-            Platform Kesehatan Berbasis Desa
-          </span>
-
-          <h1>
-            Deteksi Dini Risiko Stunting Berbasis <span>Data Desa</span>
-          </h1>
-
-          <p>
-            GiziDesa membantu kader posyandu, bidan desa, dan perangkat desa
-            memetakan risiko stunting per RT/dusun, menghitung Indeks Risiko
-            Stunting, serta mencatat tindak lanjut intervensi berbasis faktor
-            risiko dominan.
-          </p>
-
-          <div className="home-hero-actions">
-            <button className="primary-action" onClick={() => navigate("/login")}>
-              Masuk ke Sistem
-              <ArrowRight size={18} />
-            </button>
-
-            <button className="secondary-action" onClick={() => navigate("/fitur")}>
-              Lihat Fitur
-            </button>
-          </div>
-
-          <div className="home-hero-note">
-            <CheckCircle2 size={18} />
-            <span>
-              Sistem ini mendukung pengambilan keputusan desa. Hasil risiko bukan
-              diagnosis medis, tetapi dasar prioritas pemantauan.
-            </span>
-          </div>
-        </div>
-
-        <div className="home-hero-visual">
-          <div className="risk-card">
-            <div className="risk-card-header">
-              <div>
-                <span>Dashboard Prioritas</span>
-                <h3>Peta Risiko RT/Dusun</h3>
-              </div>
-              <MapPin size={28} />
-            </div>
-
-            <div className="risk-level-grid">
-              <div className="risk-level low">
-                <strong>Rendah</strong>
-                <span>2 Wilayah</span>
-              </div>
-              <div className="risk-level medium">
-                <strong>Sedang</strong>
-                <span>3 Wilayah</span>
-              </div>
-              <div className="risk-level high">
-                <strong>Tinggi</strong>
-                <span>1 Wilayah</span>
-              </div>
-            </div>
-
-            <div className="risk-priority-box">
-              <span>Faktor dominan</span>
-              <strong>Sanitasi dan akses layanan</strong>
-              <p>Direkomendasikan edukasi PHBS dan kunjungan pendampingan.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="home-highlight-section">
-        {highlights.map((item) => (
-          <article key={item.label} className="highlight-card">
-            <strong>{item.value}</strong>
-            <h3>{item.label}</h3>
-            <p>{item.description}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="public-section">
-        <div className="public-section-header">
-          <span>Fitur Utama</span>
-          <h2>Sederhana untuk digunakan, cukup kuat untuk membantu keputusan desa</h2>
-          <p>
-            GiziDesa tidak menumpuk proses teknis di pengguna. Sistem membantu
-            mengubah data lapangan menjadi prioritas wilayah yang mudah dibaca.
-          </p>
-        </div>
-
-        <div className="home-feature-grid">
-          {features.map((feature) => {
-            const Icon = feature.icon;
-
-            return (
-              <article key={feature.title} className="home-feature-card">
-                <div className="feature-icon">
-                  <Icon size={26} />
-                </div>
-                <h3>{feature.title}</h3>
-                <p>{feature.text}</p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="public-section compact">
-        <div className="public-section-header">
-          <span>Pengguna Sistem</span>
-          <h2>Dirancang sesuai peran kerja di desa</h2>
-          <p>
-            Setiap pengguna hanya melihat fungsi yang relevan dengan tugasnya,
-            sehingga sistem lebih mudah dipelajari dan digunakan.
-          </p>
-        </div>
-
-        <div className="home-role-grid">
-          {roles.map((role) => {
-            const Icon = role.icon;
-
-            return (
-              <article key={role.title} className="home-role-card">
-                <Icon size={28} />
-                <h3>{role.title}</h3>
-                <p>{role.text}</p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="home-flow-section">
-        <div className="public-section-header light">
-          <span>Alur Kerja</span>
-          <h2>Dari data lapangan menjadi tindak lanjut</h2>
-        </div>
-
-        <div className="flow-line">
-          <div>
-            <strong>1</strong>
-            <span>Input Data</span>
-          </div>
-          <div>
-            <strong>2</strong>
-            <span>Hitung IRS</span>
-          </div>
-          <div>
-            <strong>3</strong>
-            <span>Lihat Prioritas</span>
-          </div>
-          <div>
-            <strong>4</strong>
-            <span>Catat Intervensi</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="home-cta-section">
-        <div>
-          <span>Mulai Gunakan</span>
-          <h2>Siap memetakan risiko stunting berbasis data desa?</h2>
-          <p>
-            Masuk sebagai admin, kader, atau bidan untuk mulai menggunakan
-            sistem sesuai peran masing-masing.
-          </p>
-        </div>
-
-        <button className="primary-action" onClick={() => navigate("/login")}>
-          Masuk ke Sistem
-          <ArrowRight size={18} />
+    <div className="public-page">
+      <header className="public-navbar">
+        <button
+          type="button"
+          className="public-brand"
+          onClick={() => scrollToSection("beranda")}
+        >
+          <img src={logoGiziDesa} alt="Logo GiziDesa" />
+          <span>GiziDesa</span>
         </button>
-      </section>
-    </PublicLayout>
+
+        <nav className={isMenuOpen ? "public-nav open" : "public-nav"}>
+          {navItems.map((item) => (
+            <button
+              type="button"
+              key={item.target}
+              onClick={() => scrollToSection(item.target)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="public-navbar-actions">
+          <button
+            type="button"
+            className="public-login-button"
+            onClick={() => navigate("/login")}
+          >
+            Masuk
+          </button>
+
+          <button
+            type="button"
+            className="public-menu-button"
+            onClick={() => setIsMenuOpen((current) => !current)}
+            aria-label="Buka menu"
+          >
+            {isMenuOpen ? <X size={21} /> : <Menu size={21} />}
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section className="public-hero" id="beranda">
+          <div className="public-container public-hero-grid">
+            <div className="public-hero-content">
+              <span className="public-eyebrow">
+                Platform Kesehatan Berbasis Desa
+              </span>
+
+              <h1>Deteksi Dini Risiko Stunting Berbasis Data Desa</h1>
+
+              <p>
+                GiziDesa membantu desa memetakan risiko stunting per RT/dusun,
+                menghitung Indeks Risiko Stunting, dan menentukan prioritas
+                tindak lanjut berdasarkan data lapangan.
+              </p>
+
+              <div className="public-hero-actions">
+                <button
+                  type="button"
+                  className="public-primary-button"
+                  onClick={() => navigate("/login")}
+                >
+                  Masuk ke Sistem
+                  <ArrowRight size={18} />
+                </button>
+
+                <button
+                  type="button"
+                  className="public-secondary-button"
+                  onClick={() => scrollToSection("fitur")}
+                >
+                  Lihat Fitur
+                </button>
+              </div>
+
+              <div className="public-hero-note">
+                <ShieldCheck size={18} />
+                <span>
+                  Sistem ini membantu pengambilan keputusan desa. Hasil risiko
+                  bukan diagnosis medis, tetapi dasar prioritas pemantauan.
+                </span>
+              </div>
+            </div>
+
+            <div className="public-dashboard-card">
+              <div className="public-dashboard-header">
+                <div>
+                  <span>Dashboard Prioritas</span>
+                  <h2>Peta Risiko RT/Dusun</h2>
+                </div>
+                <MapPin size={28} />
+              </div>
+
+              <div className="public-risk-list">
+                <div className="low">
+                  <strong>Rendah</strong>
+                  <span>2 Wilayah</span>
+                </div>
+                <div className="medium">
+                  <strong>Sedang</strong>
+                  <span>3 Wilayah</span>
+                </div>
+                <div className="high">
+                  <strong>Tinggi</strong>
+                  <span>1 Wilayah</span>
+                </div>
+              </div>
+
+              <div className="public-factor-box">
+                <small>Faktor dominan</small>
+                <strong>Sanitasi dan akses layanan</strong>
+                <p>
+                  Direkomendasikan edukasi PHBS dan kunjungan pendampingan.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="public-section" id="masalah">
+          <div className="public-container">
+            <div className="public-section-header">
+              <span>Masalah</span>
+              <h2>Mengapa GiziDesa dibutuhkan?</h2>
+              <p>
+                GiziDesa dirancang untuk membantu desa membaca data risiko
+                stunting secara lebih terarah dan mudah dipantau.
+              </p>
+            </div>
+
+            <div className="public-card-grid three">
+              {problemItems.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <article className="public-info-card" key={item.title}>
+                    <div className="public-card-icon warning">
+                      <Icon size={23} />
+                    </div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="public-section soft" id="fitur">
+          <div className="public-container">
+            <div className="public-section-header">
+              <span>Fitur</span>
+              <h2>Fitur utama GiziDesa</h2>
+              <p>
+                Fitur GiziDesa membantu data lapangan berubah menjadi informasi
+                prioritas yang mudah dibaca oleh kader, bidan, dan admin desa.
+              </p>
+            </div>
+
+            <div className="public-card-grid four">
+              {featureItems.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <article className="public-info-card compact" key={item.title}>
+                    <div className="public-card-icon">
+                      <Icon size={22} />
+                    </div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="public-flow-card">
+              <span>Alur Singkat</span>
+              <div>
+                <strong>Kader input data</strong>
+                <ArrowRight size={17} />
+                <strong>Sistem hitung IRS</strong>
+                <ArrowRight size={17} />
+                <strong>Bidan membaca prioritas</strong>
+                <ArrowRight size={17} />
+                <strong>Admin memantau laporan</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="public-section" id="pengguna">
+          <div className="public-container">
+            <div className="public-section-header">
+              <span>Pengguna</span>
+              <h2>Digunakan sesuai peran di desa</h2>
+              <p>
+                Setiap pengguna hanya melihat fungsi yang relevan dengan tugasnya
+                sehingga sistem lebih mudah digunakan.
+              </p>
+            </div>
+
+            <div className="public-card-grid three">
+              {userItems.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <article className="public-user-card" key={item.title}>
+                    <Icon size={30} />
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="public-cta-section">
+          <div className="public-container">
+            <div className="public-cta-card">
+              <div>
+                <span>Mulai Gunakan</span>
+                <h2>Siap menggunakan GiziDesa?</h2>
+                <p>
+                  Masuk sebagai admin, kader, atau bidan untuk mulai mengelola
+                  data risiko dan tindak lanjut wilayah.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="public-primary-button"
+                onClick={() => navigate("/login")}
+              >
+                Masuk ke Sistem
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="public-footer">
+        <div className="public-container public-footer-grid">
+          <div className="public-footer-brand">
+            <div>
+              <img src={logoGiziDesa} alt="Logo GiziDesa" />
+              <strong>GiziDesa</strong>
+            </div>
+            <p>
+              Platform pendukung pemetaan risiko stunting berbasis data desa.
+            </p>
+          </div>
+
+          <div>
+            <strong>Fitur</strong>
+            <span>Input Data Risiko</span>
+            <span>Kalkulator IRS</span>
+            <span>Peta Risiko</span>
+            <span>Tracking Intervensi</span>
+          </div>
+
+          <div>
+            <strong>Pengguna</strong>
+            <span>Kader Posyandu</span>
+            <span>Bidan Desa</span>
+            <span>Admin Desa</span>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
 
