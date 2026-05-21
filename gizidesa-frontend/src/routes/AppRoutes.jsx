@@ -11,6 +11,12 @@ import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 
+import KaderDashboard from "../pages/kader/KaderDashboard";
+import InputDataRT from "../pages/kader/InputDataRT";
+import PetaRisiko from "../pages/kader/PetaRisiko";
+import EdukasiPangan from "../pages/kader/EdukasiPangan";
+import DataWarga from "../pages/kader/DataWarga";
+
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("gizidesa_token");
 
@@ -30,6 +36,7 @@ function AppRoutes() {
       <Route path="/pengguna" element={<PenggunaPage />} />
       <Route path="/alur-kerja" element={<AlurKerjaPage />} />
       <Route path="/sdgs" element={<SdgsPage />} />
+      
 
       <Route path="/login" element={<Login />} />
 
@@ -47,6 +54,51 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/kader/dashboard"
+        element={
+          <ProtectedRoute>
+            <KaderDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/kader/input-data-rt"
+        element={
+          <ProtectedRoute>
+            <InputDataRT />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/kader/peta-risiko"
+        element={
+          <ProtectedRoute>
+            <PetaRisiko />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/kader/edukasi-pangan"
+        element={
+          <ProtectedRoute>
+            <EdukasiPangan />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/kader/data-warga"
+        element={
+          <ProtectedRoute>
+            <DataWarga />
           </ProtectedRoute>
         }
       />
