@@ -1,190 +1,264 @@
 import {
-	Bell,
-	ChevronRight,
-	ClipboardList,
-	Home,
-	LogOut,
-	NotebookPen,
-	UtensilsCrossed,
-	CheckCircle2,
-	Clock3,
-	CircleDashed,
+  AlertTriangle,
+  ClipboardList,
+  MapPin,
+  Sprout,
+  UsersRound,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { getDataRisikoList } from "../../api/dataRisikoApi";
+import KaderLayout from "../../layouts/KaderLayout";
+import { getRtData, getWargaData } from "../../utils/kaderStorage";
+import { formatFactorLabel, formatNumber } from "../../utils/formatters";
+
+function normalizeRisiko(item) {
+  return {
+    ...item,
+    wilayah: item.wilayah || {
+      nama_dusun: "-",
+      nama_rt: "-",
+      kode_wilayah: "-",
+    },
+    skor_irs: Number(item.skor_irs ?? item.irs?.skor_irs ?? 0),
+    kategori_risiko:
+      item.kategori_risiko ?? item.irs?.kategori_risiko ?? "rendah",
+    faktor_dominan: item.faktor_dominan ?? item.irs?.faktor_dominan ?? "",
+    periode: item.periode || "",
+  };
+}
 
 function KaderDashboard() {
-	const navigate = useNavigate();
+  const [rtData, setRtData] = useState([]);
+  const [wargaData, setWargaData] = useState([]);
+  const [risikoData, setRisikoData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-	const stats = [
-		{ label: "Total RT Binaan", value: "12" },
-		{ label: "Sudah Diinput", value: "8" },
-		{ label: "Belum Update", value: "4" },
-	];
+  async function fetchDashboardData() {
+    try {
+      setLoading(true);
 
-	const actions = [
-		{
-			title: "Input Data RT",
-			description: "Isi 6 indikator risiko per RT",
-			icon: ClipboardList,
-			className: "is-green",
-			onClick: () => navigate("/kader/input-data-rt"),
-		},
-		{
-			title: "Status RT",
-			description: "Cek RT sudah/belum diinput",
-			icon: CheckCircle2,
-			className: "is-amber",
-			onClick: () => navigate("/kader/data-warga"),
-		},
-		{
-			title: "Panduan Pangan Lokal",
-			description: "Bahan edukasi saat kunjungan",
-			icon: UtensilsCrossed,
-			className: "is-green-soft",
-			onClick: () => navigate("/kader/edukasi-pangan"),
-		},
-	];
+      setRtData(getRtData());
+      setWargaData(getWargaData());
 
-	const recentRtUpdates = [
-		{ rt: "RT 01", status: "Lengkap", icon: CheckCircle2, className: "is-complete" },
-		{ rt: "RT 03", status: "Lengkap", icon: CheckCircle2, className: "is-complete" },
-		{ rt: "RT 05", status: "Perlu Update", icon: Clock3, className: "is-pending" },
-		{ rt: "RT 08", status: "Belum Input", icon: CircleDashed, className: "is-empty" },
-	];
+      const response = await getDataRisikoList();
+      const rawData =
+        response.data || response.data_risiko || response.items || response || [];
 
-	return (
-		<section className="kader-shell">
-			<aside className="kader-sidebar">
-				<div>
-					<div className="kader-brand">
-						<span className="kader-brand-mark">G</span>
-						<div>
-							<strong>GiziDesa</strong>
-							<small>RT 05 Dusun A</small>
-						</div>
-					</div>
+      setRisikoData(Array.isArray(rawData) ? rawData.map(normalizeRisiko) : []);
+    } catch {
+      setRisikoData([]);
+      setRtData(getRtData());
+      setWargaData(getWargaData());
+    } finally {
+      setLoading(false);
+    }
+  }
 
-					<div className="kader-role-card">
-						<span>Anda masuk sebagai</span>
-						<strong>Kader Posyandu</strong>
-						<small>Desa Pangururan</small>
-					</div>
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-					<nav className="kader-nav">
-						<button type="button" className="active" onClick={() => navigate("/kader/dashboard")}>
-							<Home size={16} />
-							Dashboard
-							<ChevronRight size={16} />
-						</button>
-						<button type="button" onClick={() => navigate("/kader/input-data-rt")}>
-							<NotebookPen size={16} />
-							Input Data RT
-						</button>
-						<button type="button" onClick={() => navigate("/kader/data-warga")}>
-							<ClipboardList size={16} />
-							Status RT
-						</button>
-						<button type="button" onClick={() => navigate("/kader/edukasi-pangan")}>
-							<UtensilsCrossed size={16} />
-							Panduan Pangan
-						</button>
-					</nav>
-				</div>
+  const totalIbuHamil = useMemo(() => {
+    return rtData.reduce(
+      (total, item) => total + Number(item.jumlah_ibu_hamil || 0),
+      0
+    );
+  }, [rtData]);
 
-				<button type="button" className="kader-logout">
-					<LogOut size={16} />
-					Keluar
-				</button>
-			</aside>
+  const totalBalita = useMemo(() => {
+    return rtData.reduce(
+      (total, item) => total + Number(item.jumlah_balita || 0),
+      0
+    );
+  }, [rtData]);
 
-			<main className="kader-main">
-				<header className="kader-topbar">
-					<div className="kader-context">
-						<strong>GiziDesa</strong>
-						<span>RT 05 Dusun A</span>
-					</div>
-					<div className="kader-topbar-actions">
-						<button type="button" className="kader-icon-button" aria-label="Notifikasi">
-							<Bell size={16} />
-						</button>
-						<div className="kader-user-chip">
-							<div>
-								<strong>ibu sianturi</strong>
-								<span>Kader Posyandu</span>
-							</div>
-							<span className="kader-avatar">IS</span>
-						</div>
-					</div>
-				</header>
+  const wilayahPerluPantau = useMemo(() => {
+    return risikoData
+      .filter(
+        (item) =>
+          item.kategori_risiko === "tinggi" || item.kategori_risiko === "sedang"
+      )
+      .sort((a, b) => Number(b.skor_irs || 0) - Number(a.skor_irs || 0))
+      .slice(0, 4);
+  }, [risikoData]);
 
-				<section className="kader-hero">
-					<div>
-						<h1>Kader Posyandu: Mata dan Tangan di Lapangan</h1>
-						<p>Input data sederhana, cek status RT, lalu gunakan panduan pangan lokal saat edukasi warga.</p>
-					</div>
-				</section>
+  const sasaranPerluPantau = useMemo(() => {
+    return wargaData
+      .filter((item) => item.status_pemantauan === "perlu_dipantau")
+      .slice(0, 4);
+  }, [wargaData]);
 
-				<section className="kader-stats">
-					{stats.map((item) => (
-						<article key={item.label} className="kader-card kader-stat-card">
-							<strong>{item.value}</strong>
-							<span>{item.label}</span>
-						</article>
-					))}
-				</section>
+  return (
+    <KaderLayout
+      title="Dashboard Kader"
+      subtitle="Ringkasan tugas lapangan, data warga, wilayah risiko, dan edukasi pangan."
+    >
+      <section className="admin-overview-grid risiko-overview">
+        <article className="admin-metric-card">
+          <span>Total Data RT</span>
+          <strong>{formatNumber(rtData.length)}</strong>
+          <p>Catatan lapangan</p>
+        </article>
 
-				<section className="kader-grid">
-					<article className="kader-card kader-action-panel">
-						<header>
-							<h2>Aksi Kader</h2>
-						</header>
-						<div className="kader-action-grid kader-action-grid-three">
-							{actions.map((item) => {
-								const Icon = item.icon;
+        <article className="admin-metric-card success">
+          <span>Total Warga</span>
+          <strong>{formatNumber(wargaData.length)}</strong>
+          <p>Sasaran terdata</p>
+        </article>
 
-								return (
-									<button key={item.title} type="button" className={`kader-action-card ${item.className}`} onClick={item.onClick}>
-										<span className="kader-action-icon">
-											<Icon size={22} />
-										</span>
-										<div>
-											<strong>{item.title}</strong>
-											<small>{item.description}</small>
-										</div>
-									</button>
-								);
-							})}
-						</div>
-					</article>
+        <article className="admin-metric-card trend">
+          <span>Ibu Hamil</span>
+          <strong>{formatNumber(totalIbuHamil)}</strong>
+          <p>Sasaran pemantauan</p>
+        </article>
 
-					<article className="kader-card kader-checklist-panel">
-						<header>
-							<h2>Status RT Terbaru</h2>
-						</header>
-						<div className="kader-status-list">
-							{recentRtUpdates.map((item) => {
-								const Icon = item.icon;
+        <article className="admin-metric-card danger">
+          <span>Balita</span>
+          <strong>{formatNumber(totalBalita)}</strong>
+          <p>Data dari RT</p>
+        </article>
+      </section>
 
-								return (
-									<div key={item.rt} className={`kader-status-item ${item.className}`}>
-										<div>
-											<strong>{item.rt}</strong>
-											<small>{item.status}</small>
-										</div>
-										<Icon size={18} />
-									</div>
-								);
-							})}
-						</div>
-						<div className="kader-tip-box">
-							<strong>Kenapa Penting?</strong>
-							<p>Data yang kader input langsung dihitung menjadi IRS, jadi bidan dan perangkat desa bisa bertindak lebih cepat tanpa rekap manual.</p>
-						</div>
-					</article>
-				</section>
-			</main>
-		</section>
-	);
+      <section className="admin-panel kader-hero-card">
+        <div className="kader-hero-content">
+          <div>
+            <span>Peran Kader</span>
+            <h2>Pelaksana Pendataan dan Edukasi Lapangan</h2>
+            <p>
+              Kader bertugas membantu pendataan awal di tingkat RT, memantau
+              sasaran warga, melihat wilayah risiko, dan menggunakan referensi
+              pangan lokal sebagai bahan edukasi masyarakat.
+            </p>
+          </div>
+
+          <div className="kader-hero-summary">
+            <ClipboardList size={22} />
+            <div>
+              <strong>Fokus Kerja Lapangan</strong>
+              <p>
+                Input data RT, pantau warga sasaran, cek peta risiko, dan
+                lakukan edukasi pangan lokal sesuai kebutuhan wilayah.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="admin-dashboard-grid bottom">
+        <article className="admin-panel">
+          <div className="admin-panel-header">
+            <div>
+              <span>Pemantauan Wilayah</span>
+              <h2>Wilayah Perlu Perhatian</h2>
+              <p>
+                Daftar ini membantu kader mengetahui dusun/RT yang perlu
+                dipantau berdasarkan data risiko yang sudah dikelola sistem.
+              </p>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="kader-simple-state">Memuat wilayah risiko...</div>
+          ) : wilayahPerluPantau.length === 0 ? (
+            <div className="kader-simple-state">
+              Belum ada wilayah risiko sedang atau tinggi.
+            </div>
+          ) : (
+            <div className="kader-task-list">
+              {wilayahPerluPantau.map((item) => (
+                <div className="kader-task-item" key={item.id}>
+                  <span className={`kader-risk-icon ${item.kategori_risiko}`}>
+                    <AlertTriangle size={17} />
+                  </span>
+
+                  <div>
+                    <strong>
+                      {item.wilayah?.nama_dusun || "-"} -{" "}
+                      {item.wilayah?.nama_rt || "-"}
+                    </strong>
+                    <small>
+                      IRS {Number(item.skor_irs || 0).toFixed(2)} ·{" "}
+                      {formatFactorLabel(item.faktor_dominan)}
+                    </small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>
+
+        <article className="admin-panel">
+          <div className="admin-panel-header">
+            <div>
+              <span>Sasaran Warga</span>
+              <h2>Warga Perlu Dipantau</h2>
+              <p>
+                Data ini membantu kader melihat sasaran yang perlu kunjungan
+                atau pemantauan lanjutan.
+              </p>
+            </div>
+          </div>
+
+          {sasaranPerluPantau.length === 0 ? (
+            <div className="kader-simple-state">
+              Belum ada warga dengan status perlu dipantau.
+            </div>
+          ) : (
+            <div className="kader-task-list">
+              {sasaranPerluPantau.map((item) => (
+                <div className="kader-task-item" key={item.id}>
+                  <span className="kader-risk-icon rendah">
+                    <UsersRound size={17} />
+                  </span>
+
+                  <div>
+                    <strong>{item.nama}</strong>
+                    <small>
+                      {item.wilayah} · {item.kategori_sasaran.replaceAll("_", " ")}
+                    </small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>
+      </section>
+
+      <section className="admin-dashboard-grid bottom">
+        <article className="admin-panel">
+          <div className="admin-panel-header">
+            <div>
+              <span>Alur Kerja Kader</span>
+              <h2>Tugas Utama Kader</h2>
+              <p>
+                Kader tidak mengubah skor IRS secara langsung. Kader membantu
+                mengumpulkan data awal dan menjalankan edukasi lapangan.
+              </p>
+            </div>
+          </div>
+
+          <div className="kader-flow-list">
+            <div>
+              <ClipboardList size={18} />
+              <span>Input data kondisi RT dan catatan lapangan</span>
+            </div>
+            <div>
+              <UsersRound size={18} />
+              <span>Pantau warga sasaran seperti ibu hamil dan balita</span>
+            </div>
+            <div>
+              <MapPin size={18} />
+              <span>Lihat peta risiko sebagai panduan pemantauan</span>
+            </div>
+            <div>
+              <Sprout size={18} />
+              <span>Gunakan pangan lokal untuk edukasi gizi</span>
+            </div>
+          </div>
+        </article>
+      </section>
+    </KaderLayout>
+  );
 }
 
 export default KaderDashboard;

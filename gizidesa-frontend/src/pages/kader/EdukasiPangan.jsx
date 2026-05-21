@@ -1,249 +1,237 @@
 import {
-	BadgeInfo,
-	Bell,
-	ChevronRight,
-	Fish,
-	Home,
-	Leaf,
-	LogOut,
-	MapPin,
-	NotebookPen,
-	Sparkles,
-	Sprout,
-	Trees,
-	ClipboardList,
+  BookOpen,
+  Search,
+  Sprout,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { getPanganLokalList } from "../../api/panganLokalApi";
+import KaderLayout from "../../layouts/KaderLayout";
+import { formatNumber } from "../../utils/formatters";
+
+const DEFAULT_PANGAN = [
+  {
+    id: 1,
+    nama_pangan: "Daun Kelor",
+    kategori: "sayuran",
+    manfaat: "Sumber zat besi, vitamin, dan mineral untuk mendukung kebutuhan gizi keluarga.",
+    sasaran: "Ibu hamil, balita, dan keluarga risiko gizi.",
+    cara_penggunaan:
+      "Dapat diolah sebagai sayur bening, campuran bubur, atau lauk pendamping.",
+  },
+  {
+    id: 2,
+    nama_pangan: "Ikan Mujair",
+    kategori: "protein",
+    manfaat: "Sumber protein hewani untuk membantu pertumbuhan balita dan pemenuhan gizi keluarga.",
+    sasaran: "Balita dan keluarga dengan risiko gizi.",
+    cara_penggunaan:
+      "Dapat dimasak sebagai lauk harian dengan cara direbus, dikukus, atau dipanggang.",
+  },
+];
+
+function normalizePangan(item) {
+  return {
+    id: item.id,
+    nama_pangan: item.nama_pangan || item.nama || item.name || "-",
+    kategori: item.kategori || item.category || "lainnya",
+    manfaat: item.manfaat || item.deskripsi || item.description || "",
+    sasaran: item.sasaran || item.target || "Masyarakat umum",
+    cara_penggunaan:
+      item.cara_penggunaan ||
+      item.rekomendasi_penggunaan ||
+      item.catatan ||
+      "Gunakan sesuai kebutuhan edukasi gizi masyarakat.",
+  };
+}
+
+function getCategoryLabel(value) {
+  const labels = {
+    sayuran: "Sayuran",
+    buah: "Buah",
+    protein: "Protein",
+    karbohidrat: "Karbohidrat",
+    kacang_kacangan: "Kacang-kacangan",
+    lainnya: "Lainnya",
+  };
+
+  return labels[value] || value || "-";
+}
 
 function EdukasiPangan() {
-	const navigate = useNavigate();
+  const [panganList, setPanganList] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("semua");
+  const [loading, setLoading] = useState(true);
 
-	const foods = [
-		{
-			name: "Ikan Jurung",
-			subtitle: "Ikan Jurung",
-			category: "Protein Hewani",
-			icon: Fish,
-			tags: ["Protein tinggi", "Omega-3", "Vitamin D"],
-			price: "Rp 25.000/kg",
-			availability: "Mudah & Murah",
-			recipe: "Arsik ikan jurung dengan andaliman dan daun kunyit",
-			sustainability: "Ikan lokal dari Danau Toba, mendukung ekonomi nelayan lokal",
-			benefit: "Membantu pertumbuhan otak janin dan balita.",
-		},
-		{
-			name: "Ikan Mas",
-			subtitle: "Ikan Mas",
-			category: "Protein Hewani",
-			icon: Fish,
-			tags: ["Protein", "Omega-3", "Vitamin B12"],
-			price: "Rp 35.000/kg",
-			availability: "Mudah",
-			recipe: "Ikan mas kuah kuning dengan daun kemangi",
-			sustainability: "Budidaya lokal berkelanjutan",
-			benefit: "Protein mudah dicerna, baik untuk ibu hamil dan balita.",
-		},
-		{
-			name: "Daun Kelor",
-			subtitle: "Daun Kelor",
-			category: "Sayuran Hijau",
-			icon: Leaf,
-			tags: ["Zat besi tinggi", "Kalsium", "Vitamin A"],
-			price: "Gratis - Rp 5.000/ikat",
-			availability: "Sangat Mudah",
-			recipe: "Sayur bening daun kelor dengan jagung manis",
-			sustainability: "Tanaman lokal yang mudah tumbuh dan tidak perlu pestisida",
-			benefit: "Membantu cegah anemia dan menjaga kualitas ASI.",
-		},
-		{
-			name: "Andaliman",
-			subtitle: "Andaliman",
-			category: "Bumbu Lokal",
-			icon: Sparkles,
-			tags: ["Antioksidan", "Vitamin C", "Mineral"],
-			price: "Rp 10.000/ons",
-			availability: "Cukup Mudah",
-			recipe: "Bumbu arsik, sambal andaliman",
-			sustainability: "Rempah khas Batak yang tumbuh liar di pegunungan",
-			benefit: "Meningkatkan nafsu makan dan membantu pencernaan.",
-		},
-		{
-			name: "Sayur Kubis Lokal",
-			subtitle: "Kobis",
-			category: "Sayuran",
-			icon: Trees,
-			tags: ["Serat", "Vitamin K", "Folat"],
-			price: "Rp 8.000/kg",
-			availability: "Mudah & Murah",
-			recipe: "Tumis kubis dengan wortel dan sosis",
-			sustainability: "Budidaya lokal di dataran tinggi Toba",
-			benefit: "Mendukung pencernaan ibu hamil dan mencegah cacat lahir.",
-		},
-		{
-			name: "Taoge Kacang Hijau",
-			subtitle: "Taoge",
-			category: "Sayuran",
-			icon: Sprout,
-			tags: ["Asam folat tinggi", "Vitamin C", "Protein nabati"],
-			price: "Rp 5.000/kg",
-			availability: "Sangat Mudah",
-			recipe: "Tumis taoge dengan tempe atau capcay taoge",
-			sustainability: "Mudah diproduksi di rumah dari kacang hijau lokal",
-			benefit: "Cocok untuk kebutuhan gizi ibu hamil dan balita.",
-		},
-	];
+  async function fetchPanganData() {
+    try {
+      setLoading(true);
 
-	return (
-		<section className="kader-shell">
-			<aside className="kader-sidebar">
-				<div>
-					<div className="kader-brand">
-						<span className="kader-brand-mark">G</span>
-						<div>
-							<strong>GiziDesa</strong>
-							<small>RT 05 Dusun A</small>
-						</div>
-					</div>
+      const response = await getPanganLokalList();
+      const rawData =
+        response.data || response.pangan_lokal || response.items || response || [];
 
-					<div className="kader-role-card">
-						<span>Anda masuk sebagai</span>
-						<strong>Kader Posyandu</strong>
-						<small>Desa Pangururan</small>
-					</div>
+      const normalized = Array.isArray(rawData)
+        ? rawData.map(normalizePangan)
+        : DEFAULT_PANGAN;
 
-					<nav className="kader-nav">
-						<button type="button" onClick={() => navigate("/kader/dashboard")}>
-							<Home size={16} />
-							Dashboard
-						</button>
-						<button type="button" onClick={() => navigate("/kader/input-data-rt")}>
-							<NotebookPen size={16} />
-							Input Data RT
-						</button>
-						<button type="button" onClick={() => navigate("/kader/data-warga")}>
-							<ClipboardList size={16} />
-							Status RT
-						</button>
-						<button type="button" className="active" onClick={() => navigate("/kader/edukasi-pangan")}>
-							<MapPin size={16} />
-							Panduan Pangan
-							<ChevronRight size={16} />
-						</button>
-					</nav>
-				</div>
+      setPanganList(normalized.length > 0 ? normalized : DEFAULT_PANGAN);
+    } catch {
+      setPanganList(DEFAULT_PANGAN);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-				<button type="button" className="kader-logout">
-					<LogOut size={16} />
-					Keluar
-				</button>
-			</aside>
+  useEffect(() => {
+    fetchPanganData();
+  }, []);
 
-			<main className="kader-main">
-				<header className="kader-topbar">
-					<div className="kader-context">
-						<strong>GiziDesa</strong>
-						<span>RT 05 Dusun A</span>
-					</div>
-					<div className="kader-topbar-actions">
-						<button type="button" className="kader-icon-button" aria-label="Notifikasi">
-							<Bell size={16} />
-						</button>
-						<div className="kader-user-chip">
-							<div>
-								<strong>ibu sianturi</strong>
-								<span>Kader Posyandu</span>
-							</div>
-							<span className="kader-avatar">IS</span>
-						</div>
-					</div>
-				</header>
+  const categories = useMemo(() => {
+    return Array.from(new Set(panganList.map((item) => item.kategori))).filter(
+      Boolean
+    );
+  }, [panganList]);
 
-				<section className="kader-page-header">
-					<div>
-						<h1>Pangan Bergizi Lokal</h1>
-						<p>Makanan bergizi dari sumber lokal untuk mendukung ibu hamil dan balita.</p>
-					</div>
-				</section>
+  const filteredPangan = useMemo(() => {
+    const keyword = searchKeyword.toLowerCase().trim();
 
-				<section className="kader-feature-banner">
-					<div className="kader-feature-icon">
-						<BadgeInfo size={18} />
-					</div>
-					<div>
-						<h2>Gizi Baik dari Pangan Lokal</h2>
-						<p>
-							Makanan bergizi tidak harus mahal dan dari luar daerah. Danau Toba dan sekitarnya punya bahan pangan lokal yang kaya nutrisi, mudah didapat, dan terjangkau.
-						</p>
-					</div>
-				</section>
+    return panganList.filter((item) => {
+      const text = `${item.nama_pangan} ${item.kategori} ${item.manfaat} ${item.sasaran} ${item.cara_penggunaan}`.toLowerCase();
 
-				<section className="kader-food-grid">
-					{foods.map((food) => {
-						const Icon = food.icon;
+      const matchKeyword = !keyword || text.includes(keyword);
+      const matchCategory =
+        categoryFilter === "semua" || item.kategori === categoryFilter;
 
-						return (
-							<article key={food.name} className="kader-food-card">
-								<div className="kader-food-header">
-									<div className="kader-food-visual">
-										<Icon size={34} />
-										<strong>{food.name}</strong>
-										<span>{food.subtitle}</span>
-									</div>
-									<span className="kader-food-badge">{food.category}</span>
-								</div>
+      return matchKeyword && matchCategory;
+    });
+  }, [panganList, searchKeyword, categoryFilter]);
 
-								<div className="kader-food-body">
-									<div className="kader-food-section">
-										<strong>Kandungan Gizi</strong>
-										<div className="kader-pill-list">
-											{food.tags.map((tag) => (
-												<span key={tag}>{tag}</span>
-											))}
-										</div>
-									</div>
+  return (
+    <KaderLayout
+      title="Edukasi Pangan"
+      subtitle="Referensi pangan lokal untuk membantu kader memberikan edukasi gizi kepada masyarakat."
+    >
+      <section className="admin-overview-grid risiko-overview">
+        <article className="admin-metric-card">
+          <span>Total Pangan</span>
+          <strong>{formatNumber(panganList.length)}</strong>
+          <p>Referensi tersedia</p>
+        </article>
 
-									<div className="kader-food-meta-grid">
-										<div>
-											<small>Harga</small>
-											<strong>{food.price}</strong>
-										</div>
-										<div>
-											<small>Ketersediaan</small>
-											<strong>{food.availability}</strong>
-										</div>
-									</div>
+        <article className="admin-metric-card success">
+          <span>Kategori</span>
+          <strong>{formatNumber(categories.length)}</strong>
+          <p>Kelompok pangan</p>
+        </article>
 
-									<div className="kader-food-section">
-										<strong>Manfaat untuk Ibu & Anak</strong>
-										<p>{food.benefit}</p>
-									</div>
+        <article className="admin-metric-card trend">
+          <span>Ditampilkan</span>
+          <strong>{formatNumber(filteredPangan.length)}</strong>
+          <p>Hasil filter</p>
+        </article>
+      </section>
 
-									<div className="kader-info-note">
-										<strong>Ide Resep</strong>
-										<p>{food.recipe}</p>
-									</div>
+      <section className="admin-panel kader-hero-card">
+        <div className="kader-hero-content">
+          <div>
+            <span>Edukasi Pangan</span>
+            <h2>Referensi Pangan Lokal untuk Penyuluhan</h2>
+            <p>
+              Kader dapat menggunakan informasi pangan lokal sebagai bahan
+              edukasi kepada ibu hamil, keluarga risiko, dan masyarakat agar
+              pemenuhan gizi dapat disesuaikan dengan potensi lokal desa.
+            </p>
+          </div>
 
-									<div className="kader-info-note is-green">
-										<strong>Keberlanjutan</strong>
-										<p>{food.sustainability}</p>
-									</div>
-								</div>
-							</article>
-						);
-					})}
-				</section>
+          <div className="kader-hero-summary">
+            <Sprout size={22} />
+            <div>
+              <strong>Berbasis Potensi Lokal</strong>
+              <p>
+                Edukasi pangan lokal membantu masyarakat memilih sumber gizi
+                yang dekat, mudah diperoleh, dan relevan dengan kondisi desa.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-				<section className="kader-download-card">
-					<h2>Butuh Resep Lebih Lengkap?</h2>
-					<p>Dapatkan buku resep makanan bergizi untuk ibu hamil dan balita menggunakan bahan pangan lokal Danau Toba.</p>
-					<button type="button" className="kader-button is-primary">
-						Download Buku Resep Gratis
-						<ChevronRight size={16} />
-					</button>
-				</section>
-			</main>
-		</section>
-	);
+      <section className="admin-panel">
+        <div className="admin-list-toolbar">
+          <div>
+            <span>Daftar Edukasi</span>
+            <h2>Pangan Lokal</h2>
+            <p>
+              Informasi ini bersifat edukatif. Kader dapat menjadikannya bahan
+              komunikasi saat kunjungan atau kegiatan posyandu.
+            </p>
+          </div>
+
+          <div className="admin-filter-group">
+            <div className="admin-search-control">
+              <Search size={18} />
+              <input
+                type="text"
+                value={searchKeyword}
+                placeholder="Cari pangan, manfaat, sasaran..."
+                onChange={(event) => setSearchKeyword(event.target.value)}
+              />
+            </div>
+
+            <select
+              className="admin-filter-select"
+              value={categoryFilter}
+              onChange={(event) => setCategoryFilter(event.target.value)}
+            >
+              <option value="semua">Semua Kategori</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {getCategoryLabel(category)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="kader-table-empty">Memuat edukasi pangan...</div>
+        ) : (
+          <div className="kader-pangan-grid">
+            {filteredPangan.length === 0 ? (
+              <div className="kader-table-empty">
+                Belum ada pangan lokal yang sesuai.
+              </div>
+            ) : (
+              filteredPangan.map((item) => (
+                <article className="kader-pangan-card" key={item.id}>
+                  <div className="kader-pangan-icon">
+                    <BookOpen size={20} />
+                  </div>
+
+                  <div>
+                    <span>{getCategoryLabel(item.kategori)}</span>
+                    <h3>{item.nama_pangan}</h3>
+                    <p>{item.manfaat}</p>
+
+                    <div className="kader-pangan-note">
+                      <strong>Sasaran Edukasi</strong>
+                      <small>{item.sasaran}</small>
+                    </div>
+
+                    <div className="kader-pangan-note">
+                      <strong>Cara Penggunaan</strong>
+                      <small>{item.cara_penggunaan}</small>
+                    </div>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+        )}
+      </section>
+    </KaderLayout>
+  );
 }
 
 export default EdukasiPangan;

@@ -13,7 +13,6 @@ import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminWilayahPage from "../pages/admin/wilayah/AdminWilayahPage";
 import AdminDataRisikoPage from "../pages/admin/risiko/AdminDataRisikoPage";
-
 import AdminRekomendasiPage from "../pages/admin/rekomendasi/AdminRekomendasiPage";
 import AdminPanganLokalPage from "../pages/admin/pangan/AdminPanganLokalPage";
 import AdminIntervensiPage from "../pages/admin/intervensi/AdminIntervensiPage";
@@ -48,6 +47,28 @@ function getAuthUser() {
   }
 }
 
+function normalizeRole(role) {
+  if (!role) {
+    return "";
+  }
+
+  const value = String(role).toLowerCase();
+
+  const roleMap = {
+    admin: "admin_desa",
+    admin_desa: "admin_desa",
+
+    kader: "kader",
+    kader_desa: "kader",
+    kader_posyandu: "kader",
+
+    bidan: "bidan",
+    bidan_desa: "bidan",
+  };
+
+  return roleMap[value] || value;
+}
+
 function ProtectedRoute({ children, allowedRoles }) {
   const token = getAuthToken();
   const user = getAuthUser();
@@ -56,7 +77,9 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  const userRole = normalizeRole(user.role);
+
+  if (allowedRoles && !allowedRoles.includes(userRole)) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -66,6 +89,7 @@ function ProtectedRoute({ children, allowedRoles }) {
 function AppRoutes() {
   return (
     <Routes>
+      {/* PUBLIC */}
       <Route path="/" element={<HomePage />} />
       <Route path="/masalah" element={<MasalahPage />} />
       <Route path="/fitur" element={<FiturPage />} />
@@ -73,6 +97,7 @@ function AppRoutes() {
       <Route path="/alur-kerja" element={<AlurKerjaPage />} />
       <Route path="/sdgs" element={<SdgsPage />} />
 
+      {/* AUTH */}
       <Route path="/login" element={<Login />} />
 
       <Route
@@ -90,6 +115,24 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["admin_desa"]}>
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/analitik"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminAnalitikPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/tim"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminTimPage />
           </ProtectedRoute>
         }
       />
@@ -115,71 +158,53 @@ function AppRoutes() {
       <Route
         path="/admin/rekomendasi"
         element={
-            <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
             <AdminRekomendasiPage />
-            </ProtectedRoute>
+          </ProtectedRoute>
         }
-        />
+      />
 
-        <Route
-  path="/admin/pangan"
-  element={
-    <ProtectedRoute>
-      <AdminPanganLokalPage />
-    </ProtectedRoute>
-  }
-/>
+      <Route
+        path="/admin/peta-risiko"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminPetaRisikoPage />
+          </ProtectedRoute>
+        }
+      />
 
-<Route
-  path="/admin/intervensi"
-  element={
-    <ProtectedRoute allowedRoles={["admin_desa"]}>
-      <AdminIntervensiPage />
-    </ProtectedRoute>
-  }
-/>
+      <Route
+        path="/admin/pangan"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminPanganLokalPage />
+          </ProtectedRoute>
+        }
+      />
 
-<Route
-  path="/admin/peta-risiko"
-  element={
-    <ProtectedRoute allowedRoles={["admin_desa"]}>
-      <AdminPetaRisikoPage />
-    </ProtectedRoute>
-  }
-/>
+      <Route
+        path="/admin/intervensi"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminIntervensiPage />
+          </ProtectedRoute>
+        }
+      />
 
-<Route
-  path="/admin/laporan"
-  element={
-    <ProtectedRoute allowedRoles={["admin_desa"]}>
-      <AdminLaporanPage />
-    </ProtectedRoute>
-  }
-/>
-
-<Route
-  path="/admin/analitik"
-  element={
-    <ProtectedRoute allowedRoles={["admin_desa"]}>
-      <AdminAnalitikPage />
-    </ProtectedRoute>
-  }
-/>
-
-<Route
-  path="/admin/tim"
-  element={
-    <ProtectedRoute allowedRoles={["admin_desa"]}>
-      <AdminTimPage />
-    </ProtectedRoute>
-  }
-/>
+      <Route
+        path="/admin/laporan"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminLaporanPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* KADER */}
       <Route
         path="/kader/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["kader"]}>
             <KaderDashboard />
           </ProtectedRoute>
         }
@@ -188,8 +213,17 @@ function AppRoutes() {
       <Route
         path="/kader/input-data-rt"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["kader"]}>
             <InputDataRT />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/kader/data-warga"
+        element={
+          <ProtectedRoute allowedRoles={["kader"]}>
+            <DataWarga />
           </ProtectedRoute>
         }
       />
@@ -197,7 +231,7 @@ function AppRoutes() {
       <Route
         path="/kader/peta-risiko"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["kader"]}>
             <PetaRisiko />
           </ProtectedRoute>
         }
@@ -206,17 +240,8 @@ function AppRoutes() {
       <Route
         path="/kader/edukasi-pangan"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["kader"]}>
             <EdukasiPangan />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/kader/data-warga"
-        element={
-          <ProtectedRoute>
-            <DataWarga />
           </ProtectedRoute>
         }
       />
@@ -225,7 +250,7 @@ function AppRoutes() {
       <Route
         path="/bidan/dashboard"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
@@ -234,7 +259,7 @@ function AppRoutes() {
       <Route
         path="/bidan/peta-risiko"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
@@ -243,7 +268,7 @@ function AppRoutes() {
       <Route
         path="/bidan/tindak-lanjut"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
@@ -252,7 +277,7 @@ function AppRoutes() {
       <Route
         path="/bidan/rekomendasi"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
@@ -261,7 +286,7 @@ function AppRoutes() {
       <Route
         path="/bidan/validasi-data"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
@@ -270,7 +295,7 @@ function AppRoutes() {
       <Route
         path="/bidan/monitor-anc"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
@@ -279,7 +304,7 @@ function AppRoutes() {
       <Route
         path="/bidan/pangan-lokal"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
@@ -288,12 +313,13 @@ function AppRoutes() {
       <Route
         path="/bidan/tracking"
         element={
-          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+          <ProtectedRoute allowedRoles={["bidan"]}>
             <BidanDashboard />
           </ProtectedRoute>
         }
       />
 
+      {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
