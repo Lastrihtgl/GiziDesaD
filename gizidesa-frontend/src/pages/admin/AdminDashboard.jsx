@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { getDashboardSummary } from "../../api/dashboardApi";
 import EmptyState from "../../components/common/EmptyState";
 import ErrorAlert from "../../components/common/ErrorAlert";
-import LoadingState from "../../components/common/LoadingState";
 import RiskBadge from "../../components/dashboard/RiskBadge";
 import AdminLayout from "../../layouts/AdminLayout";
 import {
@@ -125,20 +124,6 @@ function AdminDashboard() {
       tone: "teal",
     },
   ];
-
-  if (loading) {
-    return (
-      <AdminLayout
-        title="Dashboard Admin Desa"
-        subtitle="Memuat ringkasan data wilayah dan risiko."
-      >
-        <LoadingState
-          title="Memuat Dashboard Admin"
-          message="Sistem sedang mengambil data terbaru dari backend."
-        />
-      </AdminLayout>
-    );
-  }
 
   return (
     <AdminLayout

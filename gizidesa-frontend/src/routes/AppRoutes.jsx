@@ -9,7 +9,10 @@ import SdgsPage from "../pages/public/SdgsPage";
 
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
+
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminWilayahPage from "../pages/admin/wilayah/AdminWilayahPage";
+import AdminDataRisikoPage from "../pages/admin/risiko/AdminDataRisikoPage";
 
 import KaderDashboard from "../pages/kader/KaderDashboard";
 import InputDataRT from "../pages/kader/InputDataRT";
@@ -17,11 +20,34 @@ import PetaRisiko from "../pages/kader/PetaRisiko";
 import EdukasiPangan from "../pages/kader/EdukasiPangan";
 import DataWarga from "../pages/kader/DataWarga";
 
-function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("gizidesa_token");
+function getAuthToken() {
+  return localStorage.getItem("gizidesa_token");
+}
 
-  if (!token) {
+function getAuthUser() {
+  const rawUser = localStorage.getItem("gizidesa_user");
+
+  if (!rawUser) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawUser);
+  } catch {
+    return null;
+  }
+}
+
+function ProtectedRoute({ children, allowedRoles }) {
+  const token = getAuthToken();
+  const user = getAuthUser();
+
+  if (!token || !user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
@@ -36,7 +62,6 @@ function AppRoutes() {
       <Route path="/pengguna" element={<PenggunaPage />} />
       <Route path="/alur-kerja" element={<AlurKerjaPage />} />
       <Route path="/sdgs" element={<SdgsPage />} />
-      
 
       <Route path="/login" element={<Login />} />
 
@@ -49,15 +74,35 @@ function AppRoutes() {
         }
       />
 
+      {/* ADMIN */}
       <Route
         path="/admin/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
             <AdminDashboard />
           </ProtectedRoute>
         }
       />
 
+      <Route
+        path="/admin/wilayah"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminWilayahPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/data-risiko"
+        element={
+          <ProtectedRoute allowedRoles={["admin_desa"]}>
+            <AdminDataRisikoPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* KADER */}
       <Route
         path="/kader/dashboard"
         element={

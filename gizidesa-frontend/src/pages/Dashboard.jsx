@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import { getAuthUser } from "../utils/authStorage";
-import AdminDashboard from "./admin/AdminDashboard";
 
 function Dashboard() {
   const user = getAuthUser();
@@ -10,7 +9,7 @@ function Dashboard() {
   }
 
   if (user.role === "admin_desa") {
-    return <AdminDashboard />;
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
   if (user.role === "bidan_desa") {

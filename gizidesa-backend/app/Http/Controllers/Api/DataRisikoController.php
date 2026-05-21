@@ -24,9 +24,13 @@ class DataRisikoController extends Controller
                         ->where('nama_dusun', 'like', "%{$keyword}%")
                         ->orWhere('nama_rt', 'like', "%{$keyword}%")
                         ->orWhere('kode_wilayah', 'like', "%{$keyword}%");
-                });
+                })
+                    ->orWhere('periode', 'like', "%{$keyword}%")
+                    ->orWhere('kategori_risiko', 'like', "%{$keyword}%")
+                    ->orWhere('faktor_dominan', 'like', "%{$keyword}%")
+                    ->orWhere('rekomendasi_awal', 'like', "%{$keyword}%");
             })
-            ->when($kategori, function ($query) use ($kategori) {
+            ->when($kategori && $kategori !== 'semua', function ($query) use ($kategori) {
                 $query->where('kategori_risiko', $kategori);
             })
             ->when($periode, function ($query) use ($periode) {
@@ -48,7 +52,7 @@ class DataRisikoController extends Controller
 
         $dataRisiko = DataRisiko::create([
             ...$validated,
-            'created_by' => $request->user()->id,
+            'created_by' => $request->user()?->id,
             'skor_irs' => $hasilIrs['skor_irs'],
             'kategori_risiko' => $hasilIrs['kategori_risiko'],
             'faktor_dominan' => $hasilIrs['faktor_dominan'],
@@ -105,39 +109,42 @@ class DataRisikoController extends Controller
 
     private function hitungIrs(array $data): array
     {
+        $jumlahIbuHamil = (int) ($data['jumlah_ibu_hamil'] ?? 0);
+
         $detailSkor = [
             'ibu_hamil_kek' => $this->hitungSkorProporsi(
-                $data['jumlah_ibu_hamil_kek'],
-                $data['jumlah_ibu_hamil']
+                (int) ($data['jumlah_ibu_hamil_kek'] ?? 0),
+                $jumlahIbuHamil
             ),
+
             'anc_tidak_rutin' => $this->hitungSkorProporsi(
-                $data['jumlah_ibu_hamil_anc_tidak_rutin'],
-                $data['jumlah_ibu_hamil']
+                (int) ($data['jumlah_ibu_hamil_anc_tidak_rutin'] ?? 0),
+                $jumlahIbuHamil
             ),
-            'air_bersih' => $this->skorKategori($data['akses_air_bersih'], [
+
+            'air_bersih' => $this->skorKategori($data['akses_air_bersih'] ?? '', [
                 'baik' => 0,
-                'cukup' => 5,
-                'buruk' => 10,
+                'terbatas' => 10,
             ]),
-            'sanitasi' => $this->skorKategori($data['kondisi_sanitasi'], [
-                'baik' => 0,
-                'cukup' => 5,
-                'buruk' => 10,
+
+            'sanitasi' => $this->skorKategori($data['kondisi_sanitasi'] ?? '', [
+                'layak' => 0,
+                'tidak_layak' => 10,
             ]),
-            'ekonomi' => $this->skorKategori($data['tingkat_ekonomi'], [
-                'baik' => 0,
-                'sedang' => 5,
-                'rendah' => 10,
+
+            'ekonomi' => $this->skorKategori($data['tingkat_ekonomi'] ?? '', [
+                'stabil' => 0,
+                'rentan' => 10,
             ]),
-            'akses_layanan' => $this->skorKategori($data['akses_layanan_kesehatan'], [
+
+            'akses_layanan' => $this->skorKategori($data['akses_layanan_kesehatan'] ?? '', [
                 'mudah' => 0,
-                'cukup' => 5,
                 'sulit' => 10,
             ]),
-            'pangan_lokal' => $this->skorKategori($data['pemanfaatan_pangan_lokal'], [
-                'baik' => 0,
-                'cukup' => 5,
-                'rendah' => 10,
+
+            'pangan_lokal' => $this->skorKategori($data['pemanfaatan_pangan_lokal'] ?? '', [
+                'optimal' => 0,
+                'belum_optimal' => 10,
             ]),
         ];
 
@@ -157,6 +164,11 @@ class DataRisikoController extends Controller
             $skorAkhir += $skor * $bobot[$indikator];
         }
 
+        /*
+         * Skor indikator berada pada rentang 0-10.
+         * Setelah dikalikan bobot, hasilnya masih 0-10.
+         * Dikalikan 10 agar menjadi skala 0-100.
+         */
         $skorAkhir = round($skorAkhir * 10, 2);
 
         $kategori = match (true) {
@@ -165,7 +177,7 @@ class DataRisikoController extends Controller
             default => 'rendah',
         };
 
-        $faktorDominan = array_search(max($detailSkor), $detailSkor, true);
+        $faktorDominan = $this->tentukanFaktorDominan($detailSkor);
 
         return [
             'skor_irs' => $skorAkhir,
@@ -186,6 +198,7 @@ class DataRisikoController extends Controller
         return match (true) {
             $proporsi >= 50 => 10,
             $proporsi >= 25 => 5,
+            $proporsi > 0 => 3,
             default => 0,
         };
     }
@@ -195,7 +208,38 @@ class DataRisikoController extends Controller
         return $petaSkor[$nilai] ?? 0;
     }
 
-    private function buatRekomendasi(string $faktorDominan, string $kategori): string
+    private function tentukanFaktorDominan(array $detailSkor): ?string
+    {
+        $skorTertinggi = max($detailSkor);
+
+        if ($skorTertinggi <= 0) {
+            return null;
+        }
+
+        /*
+         * Jika ada beberapa faktor dengan skor tertinggi yang sama,
+         * urutan prioritas ini digunakan agar hasil faktor dominan konsisten.
+         */
+        $prioritas = [
+            'ibu_hamil_kek',
+            'anc_tidak_rutin',
+            'sanitasi',
+            'air_bersih',
+            'ekonomi',
+            'akses_layanan',
+            'pangan_lokal',
+        ];
+
+        foreach ($prioritas as $indikator) {
+            if (($detailSkor[$indikator] ?? 0) === $skorTertinggi) {
+                return $indikator;
+            }
+        }
+
+        return array_search($skorTertinggi, $detailSkor, true) ?: null;
+    }
+
+    private function buatRekomendasi(?string $faktorDominan, string $kategori): string
     {
         $rekomendasi = [
             'ibu_hamil_kek' => 'Prioritaskan pendampingan ibu hamil KEK, edukasi gizi, dan pemantauan konsumsi pangan bergizi.',
@@ -212,6 +256,10 @@ class DataRisikoController extends Controller
             'sedang' => 'Wilayah perlu pemantauan dan intervensi berkala. ',
             default => 'Wilayah berada pada risiko rendah, tetapi edukasi pencegahan tetap perlu dilakukan. ',
         };
+
+        if (!$faktorDominan) {
+            return $awalan . 'Lakukan pemantauan berkala agar kondisi wilayah tetap terkendali.';
+        }
 
         return $awalan . ($rekomendasi[$faktorDominan] ?? 'Lakukan pemantauan berkala berdasarkan kondisi wilayah.');
     }
