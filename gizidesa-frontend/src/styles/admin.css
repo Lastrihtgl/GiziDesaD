@@ -1848,3 +1848,1364 @@
     font-size: 19px;
   }
 }
+
+
+/* =========================
+   LEAFLET LOCATION PICKER
+========================= */
+
+.admin-modal-backdrop.top-layer {
+  z-index: 1200;
+}
+
+.location-picker-card {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid #dfe8db;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.09), transparent 34%),
+    #f8faf7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.location-picker-card span {
+  display: block;
+  margin-bottom: 5px;
+  color: #0a7b4e;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.location-picker-card h3 {
+  margin: 0;
+  color: #173d2a;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.location-picker-card p {
+  max-width: 620px;
+  margin: 7px 0 0;
+  color: #6c7770;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.map-picker-modal {
+  width: min(980px, calc(100vw - 44px));
+}
+
+.leaflet-map-picker {
+  margin-top: 14px;
+  height: 430px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #dfe8db;
+  background: #eef3ed;
+}
+
+.leaflet-location-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.map-picker-summary {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 16px;
+  background: #f8faf7;
+  border: 1px solid #e2eadf;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.map-picker-summary span {
+  display: block;
+  margin-bottom: 4px;
+  color: #6c7770;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.map-picker-summary strong {
+  color: #173d2a;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.map-picker-summary p {
+  max-width: 430px;
+  margin: 0;
+  color: #6c7770;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .location-picker-card,
+  .map-picker-summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .location-picker-card .admin-primary-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .leaflet-map-picker {
+    height: 360px;
+  }
+}
+
+/* =========================
+   MAP LOCATION SEARCH
+========================= */
+
+.map-search-panel {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.map-search-input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #dfe8db;
+  border-radius: 15px;
+  background: #f8faf7;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-search-input svg {
+  color: #1f7a35;
+  flex-shrink: 0;
+}
+
+.map-search-input input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #1f2933;
+  font-size: 14px;
+}
+
+.map-location-message {
+  margin-top: 10px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: #eef8ef;
+  color: #236832;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.map-search-results {
+  margin-top: 10px;
+  max-height: 138px;
+  overflow-y: auto;
+  border: 1px solid #e3eadf;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.map-search-results button {
+  width: 100%;
+  padding: 11px 13px;
+  border: 0;
+  border-bottom: 1px solid #eef2ec;
+  background: #ffffff;
+  color: #253229;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-search-results button:last-child {
+  border-bottom: 0;
+}
+
+.map-search-results button:hover {
+  background: #f4faf4;
+}
+
+.map-search-results svg {
+  margin-top: 2px;
+  color: #1f7a35;
+  flex-shrink: 0;
+}
+
+.map-search-results span {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (max-width: 980px) {
+  .map-search-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .map-search-input {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .map-search-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   ADMIN PETA RISIKO PAGE
+   Tambahkan di bagian paling bawah admin.css
+========================= */
+
+.risk-map-highlight {
+  min-height: 170px;
+  padding: 18px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(39, 122, 43, 0.08), transparent 34%),
+    #f8faf7;
+  border: 1px solid #e4ebe1;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.risk-map-highlight-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background: #fff3c4;
+  color: #92400e;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.risk-map-highlight-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.risk-map-highlight-content > span {
+  display: block;
+  color: #0a7b4e;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.risk-map-highlight-content h3 {
+  margin: 8px 0 8px;
+  color: #173d2a;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.risk-map-highlight-content p {
+  margin: 0;
+  max-width: 640px;
+  color: #66736b;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.risk-map-highlight-meta {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.risk-map-highlight-meta strong {
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef7ec;
+  color: #173d2a;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.risk-map-highlight-meta small {
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #f4f6f1;
+  color: #66736b;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.risk-map-focus-button {
+  min-height: 28px;
+  border: 1px solid #d8e3d5;
+  border-radius: 999px;
+  padding: 0 11px;
+  background: #ffffff;
+  color: #1f7a35;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.risk-map-focus-button:hover {
+  background: #f1f8f0;
+  border-color: #bcd7b6;
+}
+
+/* Status kecil di atas peta */
+.risk-map-status-bar {
+  margin: 14px 0 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.risk-map-status-bar > div {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #f4f6f1;
+  border: 1px solid #e4ebe1;
+  color: #4e5d54;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.risk-map-status-bar > div:first-child {
+  background: #eef8ef;
+  border-color: #d8ecd9;
+  color: #1f7a35;
+}
+
+.risk-map-status-bar > div:last-child {
+  background: #fff7d6;
+  border-color: #fde68a;
+  color: #8a5a00;
+}
+
+.risk-map-status-bar svg {
+  flex-shrink: 0;
+}
+
+/* Map utama */
+.real-risk-map-wrapper {
+  height: 520px;
+  margin-top: 12px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #dfe8db;
+  background: #eef3ed;
+  box-shadow: 0 10px 24px rgba(30, 40, 35, 0.08);
+}
+
+.real-risk-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Empty state khusus peta supaya tidak terlihat terlalu kosong */
+.admin-panel > .empty-state {
+  min-height: 230px;
+  margin-top: 14px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(39, 122, 43, 0.06), transparent 35%),
+    #f8faf7;
+  border: 1px dashed #dce6d8;
+}
+
+.admin-panel > .empty-state h3 {
+  color: #173d2a;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.admin-panel > .empty-state p {
+  max-width: 620px;
+  margin: 0 auto;
+  color: #7a8780;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Warning koordinat belum lengkap */
+.risk-coordinate-warning {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 15px;
+  background: #fff7d6;
+  border: 1px solid #fde68a;
+  color: #8a5a00;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.risk-coordinate-warning svg {
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.risk-coordinate-warning p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+/* Popup Leaflet */
+.risk-map-popup {
+  min-width: 230px;
+  color: #1c2730;
+  font-family:
+    Inter,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+}
+
+.risk-map-popup > span {
+  display: block;
+  margin-bottom: 5px;
+  color: #0a7b4e;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.risk-map-popup h3 {
+  margin: 0;
+  color: #173d2a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.risk-map-popup-code {
+  margin: 4px 0 12px;
+  color: #8a9490;
+  font-size: 12px;
+}
+
+.risk-map-popup-row {
+  padding: 9px 0;
+  border-top: 1px solid #edf1ea;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.risk-map-popup-row small,
+.risk-map-popup-recommendation small {
+  color: #7a8780;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.risk-map-popup-row strong {
+  color: #1c2730;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.risk-map-popup-recommendation {
+  padding-top: 10px;
+  border-top: 1px solid #edf1ea;
+}
+
+.risk-map-popup-recommendation p {
+  margin: 5px 0 0;
+  color: #334139;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+/* Tabel titik peta */
+.table-action-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.table-action-button:disabled:hover {
+  transform: none;
+}
+
+/* Perbaikan spacing khusus halaman peta risiko */
+.admin-panel + .admin-panel {
+  margin-top: 18px;
+}
+
+@media (max-width: 980px) {
+  .risk-map-highlight {
+    min-height: auto;
+  }
+
+  .real-risk-map-wrapper {
+    height: 430px;
+  }
+}
+
+@media (max-width: 780px) {
+  .risk-map-highlight {
+    flex-direction: column;
+  }
+
+  .risk-map-highlight-meta {
+    align-items: flex-start;
+  }
+
+  .risk-map-status-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .risk-map-status-bar > div {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .real-risk-map-wrapper {
+    height: 360px;
+  }
+}
+
+/* =========================
+   CUSTOM PERIOD MONTH PICKER
+   Untuk AdminDataRisikoPage
+========================= */
+
+.period-picker-field {
+  position: relative;
+}
+
+.period-picker-trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid #dfe8db;
+  border-radius: 14px;
+  background: #f8faf7;
+  color: #1c2730;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 9px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+}
+
+.period-picker-trigger svg {
+  color: #1f7a35;
+}
+
+.period-picker-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.period-picker-trigger:hover {
+  border-color: #bcd7b6;
+  background: #ffffff;
+}
+
+.period-picker-trigger.field-invalid {
+  border-color: #ef4444;
+  background: #fff7f7;
+}
+
+.period-picker-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  max-height: 315px;
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid #dfe8db;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(24, 39, 31, 0.18);
+  z-index: 1600;
+}
+
+.period-picker-year + .period-picker-year {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #edf1ea;
+}
+
+.period-picker-year > strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #173d2a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.period-picker-month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.period-picker-month-grid button {
+  min-height: 38px;
+  border: 1px solid #e2eadf;
+  border-radius: 12px;
+  background: #f8faf7;
+  color: #1f2933;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.period-picker-month-grid button:hover:not(:disabled) {
+  border-color: #1f7a35;
+  background: #eef8ef;
+  color: #1f7a35;
+}
+
+.period-picker-month-grid button.active {
+  border-color: #1f7a35;
+  background: #1f7a35;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.period-picker-month-grid button:disabled {
+  background: #f1f3f0;
+  color: #a1aaa4;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.period-picker-hint {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 13px;
+  background: #f8faf7;
+  border: 1px solid #edf1ea;
+}
+
+.period-picker-hint span {
+  display: block;
+  color: #0a7b4e;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.period-picker-hint p {
+  margin: 5px 0 0;
+  color: #6b756f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .period-picker-month-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.table-action-group.align-right {
+  justify-content: flex-end;
+}
+
+/* =========================
+   ADMIN LAPORAN PAGE
+========================= */
+
+.report-header-card {
+  background:
+    radial-gradient(circle at top right, rgba(31, 122, 53, 0.1), transparent 34%),
+    #ffffff;
+}
+
+.report-header-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.report-header-content span,
+.report-filter-card .admin-list-toolbar > div:first-child > span {
+  color: #0a7b4e;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.report-header-content h2 {
+  margin: 8px 0 8px;
+  color: #173d2a;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
+
+.report-header-content p {
+  max-width: 760px;
+  margin: 0;
+  color: #66736b;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.report-action-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.report-action-group.vertical {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.report-download-hint {
+  max-width: 190px;
+  color: #7a8780;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.compact-report-filter {
+  margin-top: 18px;
+}
+
+/* Ringkasan indikator utama */
+
+.report-compact-summary-panel {
+  margin-top: 18px;
+}
+
+.report-compact-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.report-compact-summary-item {
+  min-height: 92px;
+  padding: 15px 16px;
+  border-radius: 17px;
+  border: 1px solid #e4ebe1;
+  background: #f8faf7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.report-compact-summary-item span {
+  color: #66736b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.report-compact-summary-item strong {
+  margin-top: 6px;
+  color: #173d2a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.3px;
+}
+
+.report-compact-summary-item small {
+  margin-top: 5px;
+  color: #7a8780;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+/* Analisis laporan */
+
+.report-analysis-grid {
+  margin-top: 18px;
+}
+
+.report-analysis-grid .admin-panel {
+  min-height: auto;
+}
+
+.report-priority-list,
+.report-factor-list {
+  display: grid;
+  gap: 10px;
+}
+
+.report-priority-item {
+  min-height: 58px;
+  padding: 11px 13px;
+  border-radius: 16px;
+  border: 1px solid #e4ebe1;
+  background: #f8faf7;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-priority-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  background: #fff7d6;
+  color: #8a5a00;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.report-priority-item strong {
+  display: block;
+  color: #173d2a;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.report-priority-item small {
+  display: block;
+  margin-top: 3px;
+  color: #7a8780;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.report-factor-item {
+  padding: 12px 13px;
+  border-radius: 16px;
+  border: 1px solid #e4ebe1;
+  background: #f8faf7;
+  display: grid;
+  grid-template-columns: 170px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-factor-item strong {
+  display: block;
+  color: #173d2a;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.report-factor-item small {
+  display: block;
+  margin-top: 3px;
+  color: #7a8780;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.report-factor-meter {
+  height: 10px;
+  border-radius: 999px;
+  background: #e9efe6;
+  overflow: hidden;
+}
+
+.report-factor-meter span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: #1f7a35;
+}
+
+.report-factor-item b {
+  color: #173d2a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Detail laporan */
+
+.report-detail-panel {
+  margin-top: 18px;
+}
+
+.report-status-pill {
+  min-height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.report-status-pill.direncanakan {
+  background: #eef2f7;
+  color: #475569;
+}
+
+.report-status-pill.berjalan {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.report-status-pill.selesai {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.report-status-pill.ditunda {
+  background: #fff7d6;
+  color: #8a5a00;
+}
+
+.report-print-footer {
+  margin: 14px 0 0;
+  padding: 9px 13px;
+  border-radius: 13px;
+  border: 1px solid #e4ebe1;
+  background: #ffffff;
+  color: #7a8780;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* Responsive laporan */
+
+@media (max-width: 1180px) {
+  .report-compact-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .report-header-content {
+    flex-direction: column;
+  }
+
+  .report-action-group,
+  .report-action-group.vertical {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .report-download-hint {
+    max-width: none;
+    text-align: left;
+  }
+
+  .report-factor-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .report-compact-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Print PDF laporan */
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .admin-sidebar,
+  .admin-topbar,
+  .admin-menu,
+  .admin-logout-button,
+  .report-action-group,
+  .report-download-hint,
+  .report-filter-card {
+    display: none !important;
+  }
+
+  .admin-layout {
+    display: block !important;
+    background: #ffffff !important;
+  }
+
+  .admin-main,
+  .admin-content {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .admin-panel,
+  .admin-metric-card {
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .report-header-card {
+    border: none !important;
+    padding-bottom: 14px !important;
+  }
+
+  .report-header-content h2 {
+    font-size: 22px !important;
+  }
+
+  .report-header-content p,
+  .admin-panel-header p,
+  .admin-metric-card p,
+  .report-compact-summary-item small,
+  .table-muted-text {
+    color: #333333 !important;
+  }
+
+  .admin-overview-grid,
+  .report-compact-summary-grid,
+  .report-analysis-grid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .report-print-footer {
+    margin-top: 18px !important;
+    border: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+.report-pdf-area {
+  background: transparent;
+}
+
+.report-no-pdf {
+  display: flex;
+}
+
+.report-pdf-area .report-no-pdf {
+  flex-shrink: 0;
+}
+
+/* =========================
+   ADMIN LAPORAN PDF TEMPLATE
+========================= */
+
+.pdf-report-template {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  width: 1122px;
+  min-height: 794px;
+  background: #ffffff;
+  color: #1f2933;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  pointer-events: none;
+  opacity: 0;
+  z-index: -1;
+}
+
+.pdf-report-page {
+  width: 1122px;
+  min-height: 794px;
+  padding: 28px 32px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.pdf-report-header {
+  padding-bottom: 14px;
+  border-bottom: 2px solid #dfe8dd;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.pdf-report-header span,
+.pdf-section h2 {
+  color: #087044;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pdf-report-header h1 {
+  margin: 7px 0 6px;
+  color: #173d2a;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.pdf-report-header p {
+  margin: 0;
+  color: #5d6b63;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.pdf-report-meta {
+  min-width: 180px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f3f7f1;
+  text-align: right;
+}
+
+.pdf-report-meta strong {
+  display: block;
+  color: #173d2a;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.pdf-report-meta small {
+  display: block;
+  margin-top: 4px;
+  color: #66736b;
+  font-size: 10px;
+}
+
+.pdf-section {
+  margin-top: 16px;
+}
+
+.pdf-section h2 {
+  margin: 0 0 8px;
+}
+
+.pdf-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.pdf-summary-card {
+  padding: 12px 14px;
+  border: 1px solid #dfe8dd;
+  border-radius: 12px;
+  background: #f8faf7;
+}
+
+.pdf-summary-card span {
+  display: block;
+  color: #5d6b63;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pdf-summary-card strong {
+  display: block;
+  margin-top: 6px;
+  color: #173d2a;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pdf-summary-card small {
+  display: block;
+  margin-top: 5px;
+  color: #66736b;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.pdf-two-column {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.pdf-info-table,
+.pdf-compact-table,
+.pdf-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border: 1px solid #dfe8dd;
+}
+
+.pdf-info-table td {
+  padding: 8px 10px;
+  border: 1px solid #dfe8dd;
+  color: #27352f;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.pdf-info-table td:nth-child(odd) {
+  width: 25%;
+  background: #f8faf7;
+  color: #5d6b63;
+  font-weight: 700;
+}
+
+.pdf-info-table td:nth-child(even) {
+  width: 25%;
+  font-weight: 800;
+}
+
+.pdf-compact-table th,
+.pdf-data-table th {
+  padding: 8px 8px;
+  border-bottom: 1px solid #dfe8dd;
+  background: #f3f7f1;
+  color: #4d5d55;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.pdf-compact-table td,
+.pdf-data-table td {
+  padding: 8px 8px;
+  border-top: 1px solid #edf2eb;
+  color: #26362f;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  vertical-align: top;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.pdf-compact-table th:nth-child(1),
+.pdf-compact-table td:nth-child(1) {
+  width: 40%;
+}
+
+.pdf-compact-table th:nth-child(2),
+.pdf-compact-table td:nth-child(2) {
+  width: 24%;
+}
+
+.pdf-compact-table th:nth-child(3),
+.pdf-compact-table td:nth-child(3) {
+  width: 16%;
+}
+
+.pdf-compact-table th:nth-child(4),
+.pdf-compact-table td:nth-child(4) {
+  width: 20%;
+}
+
+.pdf-data-table th:nth-child(1),
+.pdf-data-table td:nth-child(1) {
+  width: 14%;
+}
+
+.pdf-data-table th:nth-child(2),
+.pdf-data-table td:nth-child(2) {
+  width: 9%;
+}
+
+.pdf-data-table th:nth-child(3),
+.pdf-data-table td:nth-child(3) {
+  width: 10%;
+}
+
+.pdf-data-table th:nth-child(4),
+.pdf-data-table td:nth-child(4) {
+  width: 7%;
+}
+
+.pdf-data-table th:nth-child(5),
+.pdf-data-table td:nth-child(5) {
+  width: 9%;
+}
+
+.pdf-data-table th:nth-child(6),
+.pdf-data-table td:nth-child(6) {
+  width: 12%;
+}
+
+.pdf-data-table th:nth-child(7),
+.pdf-data-table td:nth-child(7),
+.pdf-data-table th:nth-child(8),
+.pdf-data-table td:nth-child(8) {
+  width: 8%;
+  text-align: center;
+}
+
+.pdf-data-table th:nth-child(9),
+.pdf-data-table td:nth-child(9) {
+  width: 23%;
+}
+
+.pdf-page-break-before {
+  page-break-before: always;
+  break-before: page;
+}
+
+.pdf-avoid-break {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.pdf-report-footer {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid #dfe8dd;
+  color: #66736b;
+  font-size: 10px;
+  text-align: right;
+}

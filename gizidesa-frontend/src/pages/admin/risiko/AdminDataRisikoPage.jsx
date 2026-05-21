@@ -23,6 +23,8 @@ import RiskBadge from "../../../components/dashboard/RiskBadge";
 import AdminLayout from "../../../layouts/AdminLayout";
 import { formatFactorLabel, formatNumber } from "../../../utils/formatters";
 
+const CACHE_KEY = "gizidesa_data_risiko_cache";
+
 const initialForm = {
   wilayah_id: "",
   periode: "",
@@ -51,6 +53,49 @@ const MONTH_NAMES = [
   "November",
   "Desember",
 ];
+
+function getCurrentMonthValue() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+
+  return `${year}-${month}`;
+}
+
+function isFuturePeriod(period) {
+  if (!period || !period.includes("-")) {
+    return false;
+  }
+
+  const [yearValue, monthValue] = period.split("-");
+  const year = Number(yearValue);
+  const month = Number(monthValue);
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  if (!Number.isFinite(year) || !Number.isFinite(month)) {
+    return false;
+  }
+
+  return year > currentYear || (year === currentYear && month > currentMonth);
+}
+
+function formatPeriodLabel(period) {
+  if (!period || !period.includes("-")) {
+    return "-";
+  }
+
+  const [year, month] = period.split("-");
+  const monthIndex = Number(month) - 1;
+
+  if (Number.isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) {
+    return period;
+  }
+
+  return `${MONTH_NAMES[monthIndex]} ${year}`;
+}
 
 function normalizeDataRisiko(item) {
   return {
@@ -100,6 +145,24 @@ function normalizeDataRisiko(item) {
   };
 }
 
+function readCachedDataRisiko() {
+  const cached = sessionStorage.getItem(CACHE_KEY);
+
+  if (!cached) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(cached);
+
+    return Array.isArray(parsed)
+      ? parsed.map((item) => normalizeDataRisiko(item))
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 function formatIndicatorValue(value) {
   const labels = {
     baik: "Baik",
@@ -117,60 +180,10 @@ function formatIndicatorValue(value) {
   return labels[value] || value || "-";
 }
 
-function formatPeriodLabel(period) {
-  if (!period || !period.includes("-")) {
-    return "-";
-  }
-
-  const [year, month] = period.split("-");
-  const monthIndex = Number(month) - 1;
-
-  if (Number.isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) {
-    return period;
-  }
-
-  return `${MONTH_NAMES[monthIndex]} ${year}`;
-}
-
-function generatePeriodOptions() {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-
-  const startYear = currentYear - 3;
-  const periods = [];
-
-  for (let year = currentYear; year >= startYear; year -= 1) {
-    const lastMonth = year === currentYear ? currentMonth : 12;
-
-    for (let month = lastMonth; month >= 1; month -= 1) {
-      const monthValue = String(month).padStart(2, "0");
-      const value = `${year}-${monthValue}`;
-
-      periods.push({
-        value,
-        label: `${MONTH_NAMES[month - 1]} ${year}`,
-      });
-    }
-  }
-
-  return periods;
-}
-
 function AdminDataRisikoPage() {
-  const [dataRisikoList, setDataRisikoList] = useState(() => {
-  const cached = sessionStorage.getItem("gizidesa_data_risiko_cache");
-
-  if (!cached) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(cached);
-  } catch {
-    return [];
-  }
-});
+  const [dataRisikoList, setDataRisikoList] = useState(() =>
+    readCachedDataRisiko()
+  );
   const [wilayahList, setWilayahList] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("semua");
@@ -191,8 +204,6 @@ function AdminDataRisikoPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [formErrorMessage, setFormErrorMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
-
-  const periodOptions = useMemo(() => generatePeriodOptions(), []);
 
   async function fetchInitialData() {
     try {
@@ -223,10 +234,7 @@ function AdminDataRisikoPage() {
         : [];
 
       setDataRisikoList(normalizedRisiko);
-        sessionStorage.setItem(
-        "gizidesa_data_risiko_cache",
-        JSON.stringify(normalizedRisiko)
-        );
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify(normalizedRisiko));
       setWilayahList(Array.isArray(wilayahData) ? wilayahData : []);
     } catch (error) {
       setErrorMessage(
@@ -273,7 +281,9 @@ function AdminDataRisikoPage() {
 
     return dataRisikoList
       .filter((item) => {
-        const sameWilayah = String(item.wilayah_id) === String(formData.wilayah_id);
+        const sameWilayah =
+          String(item.wilayah_id || item.wilayah?.id || "") ===
+          String(formData.wilayah_id);
 
         const notEditedItem = selectedDataRisiko
           ? String(item.id) !== String(selectedDataRisiko.id)
@@ -281,7 +291,8 @@ function AdminDataRisikoPage() {
 
         return sameWilayah && notEditedItem;
       })
-      .map((item) => item.periode);
+      .map((item) => item.periode)
+      .filter(Boolean);
   }, [dataRisikoList, formData.wilayah_id, selectedDataRisiko]);
 
   const filteredDataRisiko = useMemo(() => {
@@ -435,6 +446,10 @@ function AdminDataRisikoPage() {
 
     if (!formData.periode) {
       errors.periode = "Periode wajib dipilih.";
+    }
+
+    if (formData.periode && isFuturePeriod(formData.periode)) {
+      errors.periode = "Periode yang belum berjalan tidak dapat dipilih.";
     }
 
     if (
@@ -729,7 +744,7 @@ function AdminDataRisikoPage() {
                   <th>Kategori</th>
                   <th>Faktor Dominan</th>
                   <th>Rekomendasi Awal</th>
-                  <th className="text-right">Aksi</th>
+                  <th className="admin-action-column">Aksi</th>
                 </tr>
               </thead>
 
@@ -771,35 +786,35 @@ function AdminDataRisikoPage() {
                       </span>
                     </td>
 
-                    <td>
-                      <div className="table-action-group">
-                        <button
-                          type="button"
-                          className="table-action-button view"
-                          onClick={() => handleOpenDetailModal(item)}
-                          title="Lihat detail"
-                        >
-                          <Eye size={16} />
-                        </button>
+                    <td className="text-right">
+                        <div className="table-action-group align-right">
+                            <button
+                            type="button"
+                            className="table-action-button view"
+                            onClick={() => handleOpenDetailModal(item)}
+                            title="Lihat detail"
+                            >
+                            <Eye size={16} />
+                            </button>
 
-                        <button
-                          type="button"
-                          className="table-action-button edit"
-                          onClick={() => handleOpenEditModal(item)}
-                          title="Edit data"
-                        >
-                          <Edit size={16} />
-                        </button>
+                            <button
+                            type="button"
+                            className="table-action-button edit"
+                            onClick={() => handleOpenEditModal(item)}
+                            title="Edit data"
+                            >
+                            <Edit size={16} />
+                            </button>
 
-                        <button
-                          type="button"
-                          className="table-action-button delete"
-                          onClick={() => handleOpenDeleteConfirm(item)}
-                          title="Hapus data"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                            <button
+                            type="button"
+                            className="table-action-button delete"
+                            onClick={() => handleOpenDeleteConfirm(item)}
+                            title="Hapus data"
+                            >
+                            <Trash2 size={16} />
+                            </button>
+                        </div>
                     </td>
                   </tr>
                 ))}
@@ -838,7 +853,10 @@ function AdminDataRisikoPage() {
               </div>
             )}
 
-            <form className="admin-form risk-compact-form" onSubmit={handleSubmit}>
+            <form
+              className="admin-form risk-compact-form"
+              onSubmit={handleSubmit}
+            >
               <div className="admin-form-grid risk-form-grid">
                 <label>
                   <span>Wilayah</span>
@@ -865,37 +883,15 @@ function AdminDataRisikoPage() {
 
                 <label>
                   <span>Periode</span>
-                  <select
+                  <input
+                    type="month"
                     name="periode"
                     value={formData.periode}
+                    max={getCurrentMonthValue()}
                     className={getFieldClassName("periode")}
                     onChange={handleChange}
                     disabled={!formData.wilayah_id}
-                  >
-                    <option value="">
-                      {formData.wilayah_id
-                        ? "Pilih periode"
-                        : "Pilih wilayah terlebih dahulu"}
-                    </option>
-
-                    {periodOptions.map((period) => {
-                      const isUsed = usedPeriodsBySelectedWilayah.includes(
-                        period.value
-                      );
-
-                      return (
-                        <option
-                          key={period.value}
-                          value={period.value}
-                          disabled={isUsed}
-                        >
-                          {isUsed
-                            ? `${period.label} - Sudah tersedia`
-                            : period.label}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  />
                   {fieldErrors.periode && (
                     <small className="field-error-text">
                       {fieldErrors.periode}

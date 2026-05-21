@@ -17,6 +17,8 @@ import AdminDataRisikoPage from "../pages/admin/risiko/AdminDataRisikoPage";
 import AdminRekomendasiPage from "../pages/admin/rekomendasi/AdminRekomendasiPage";
 import AdminPanganLokalPage from "../pages/admin/pangan/AdminPanganLokalPage";
 import AdminIntervensiPage from "../pages/admin/intervensi/AdminIntervensiPage";
+import AdminPetaRisikoPage from "../pages/admin/peta/AdminPetaRisikoPage";
+import AdminLaporanPage from "../pages/admin/laporan/AdminLaporanPage";
 
 import BidanDashboard from "../pages/bidan/BidanDashboard";
 
@@ -131,6 +133,24 @@ function AppRoutes() {
   element={
     <ProtectedRoute allowedRoles={["admin_desa"]}>
       <AdminIntervensiPage />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/peta-risiko"
+  element={
+    <ProtectedRoute allowedRoles={["admin_desa"]}>
+      <AdminPetaRisikoPage />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/laporan"
+  element={
+    <ProtectedRoute allowedRoles={["admin_desa"]}>
+      <AdminLaporanPage />
     </ProtectedRoute>
   }
 />
