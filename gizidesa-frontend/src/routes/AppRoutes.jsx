@@ -9,6 +9,7 @@ import SdgsPage from "../pages/public/SdgsPage";
 
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("gizidesa_token");
@@ -37,6 +38,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />
