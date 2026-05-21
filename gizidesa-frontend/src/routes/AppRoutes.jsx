@@ -13,6 +13,7 @@ import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminWilayahPage from "../pages/admin/wilayah/AdminWilayahPage";
 import AdminDataRisikoPage from "../pages/admin/risiko/AdminDataRisikoPage";
+import BidanDashboard from "../pages/bidan/BidanDashboard";
 
 import KaderDashboard from "../pages/kader/KaderDashboard";
 import InputDataRT from "../pages/kader/InputDataRT";
@@ -144,6 +145,79 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DataWarga />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* BIDAN */}
+      <Route
+        path="/bidan/dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bidan/peta-risiko"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bidan/tindak-lanjut"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bidan/rekomendasi"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bidan/validasi-data"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bidan/monitor-anc"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bidan/pangan-lokal"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bidan/tracking"
+        element={
+          <ProtectedRoute allowedRoles={["bidan_desa"]}>
+            <BidanDashboard />
           </ProtectedRoute>
         }
       />

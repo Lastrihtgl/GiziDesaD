@@ -4,10 +4,11 @@ import {
 	ClipboardList,
 	Home,
 	LogOut,
-	MapPinned,
 	NotebookPen,
-	Users,
 	UtensilsCrossed,
+	CheckCircle2,
+	Clock3,
+	CircleDashed,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,46 +16,40 @@ function KaderDashboard() {
 	const navigate = useNavigate();
 
 	const stats = [
-		{ label: "RT Binaan", value: "RT 05" },
-		{ label: "Risiko Tinggi", value: "2" },
-		{ label: "Kunjungan Hari Ini", value: "3" },
+		{ label: "Total RT Binaan", value: "12" },
+		{ label: "Sudah Diinput", value: "8" },
+		{ label: "Belum Update", value: "4" },
 	];
 
 	const actions = [
 		{
 			title: "Input Data RT",
-			description: "Update kondisi terbaru",
+			description: "Isi 6 indikator risiko per RT",
 			icon: ClipboardList,
 			className: "is-green",
 			onClick: () => navigate("/kader/input-data-rt"),
 		},
 		{
-			title: "Lihat Peta Risiko",
-			description: "Cek kondisi desa",
-			icon: MapPinned,
+			title: "Status RT",
+			description: "Cek RT sudah/belum diinput",
+			icon: CheckCircle2,
 			className: "is-amber",
-			onClick: () => navigate("/kader/peta-risiko"),
+			onClick: () => navigate("/kader/data-warga"),
 		},
 		{
-			title: "Edukasi Pangan",
-			description: "Materi untuk warga",
+			title: "Panduan Pangan Lokal",
+			description: "Bahan edukasi saat kunjungan",
 			icon: UtensilsCrossed,
 			className: "is-green-soft",
 			onClick: () => navigate("/kader/edukasi-pangan"),
 		},
-		{
-			title: "Rekomendasi",
-			description: "Saran intervensi",
-			icon: Users,
-			className: "is-teal",
-			onClick: () => navigate("/kader/data-warga"),
-		},
 	];
 
-	const checklist = [
-		"Kunjungi Ibu Siti (hamil 7 bulan)",
-		"Update data sanitasi RT 05",
-		"Posyandu minggu ini",
+	const recentRtUpdates = [
+		{ rt: "RT 01", status: "Lengkap", icon: CheckCircle2, className: "is-complete" },
+		{ rt: "RT 03", status: "Lengkap", icon: CheckCircle2, className: "is-complete" },
+		{ rt: "RT 05", status: "Perlu Update", icon: Clock3, className: "is-pending" },
+		{ rt: "RT 08", status: "Belum Input", icon: CircleDashed, className: "is-empty" },
 	];
 
 	return (
@@ -87,15 +82,11 @@ function KaderDashboard() {
 						</button>
 						<button type="button" onClick={() => navigate("/kader/data-warga")}>
 							<ClipboardList size={16} />
-							Tugas Saya
-						</button>
-						<button type="button" onClick={() => navigate("/kader/peta-risiko")}>
-							<MapPinned size={16} />
-							Peta Risiko
+							Status RT
 						</button>
 						<button type="button" onClick={() => navigate("/kader/edukasi-pangan")}>
 							<UtensilsCrossed size={16} />
-							Pangan Lokal
+							Panduan Pangan
 						</button>
 					</nav>
 				</div>
@@ -128,8 +119,8 @@ function KaderDashboard() {
 
 				<section className="kader-hero">
 					<div>
-						<h1>Selamat Pagi, Kader! 👋</h1>
-						<p>Apa yang perlu dilakukan hari ini?</p>
+						<h1>Kader Posyandu: Mata dan Tangan di Lapangan</h1>
+						<p>Input data sederhana, cek status RT, lalu gunakan panduan pangan lokal saat edukasi warga.</p>
 					</div>
 				</section>
 
@@ -145,9 +136,9 @@ function KaderDashboard() {
 				<section className="kader-grid">
 					<article className="kader-card kader-action-panel">
 						<header>
-							<h2>Aksi Utama</h2>
+							<h2>Aksi Kader</h2>
 						</header>
-						<div className="kader-action-grid">
+						<div className="kader-action-grid kader-action-grid-three">
 							{actions.map((item) => {
 								const Icon = item.icon;
 
@@ -168,19 +159,26 @@ function KaderDashboard() {
 
 					<article className="kader-card kader-checklist-panel">
 						<header>
-							<h2>Checklist Tugas Minggu Ini</h2>
+							<h2>Status RT Terbaru</h2>
 						</header>
-						<div className="kader-checklist-list">
-							{checklist.map((item, index) => (
-								<label key={item} className={index === checklist.length - 1 ? "kader-checklist-item is-complete" : "kader-checklist-item"}>
-									<input type="checkbox" defaultChecked={index === checklist.length - 1} />
-									<span>{item}</span>
-								</label>
-							))}
+						<div className="kader-status-list">
+							{recentRtUpdates.map((item) => {
+								const Icon = item.icon;
+
+								return (
+									<div key={item.rt} className={`kader-status-item ${item.className}`}>
+										<div>
+											<strong>{item.rt}</strong>
+											<small>{item.status}</small>
+										</div>
+										<Icon size={18} />
+									</div>
+								);
+							})}
 						</div>
 						<div className="kader-tip-box">
-							<strong>Tips</strong>
-							<p>Selalu update data setelah kunjungan. Data yang akurat membantu Bidan dan Admin membuat keputusan terbaik untuk warga.</p>
+							<strong>Kenapa Penting?</strong>
+							<p>Data yang kader input langsung dihitung menjadi IRS, jadi bidan dan perangkat desa bisa bertindak lebih cepat tanpa rekap manual.</p>
 						</div>
 					</article>
 				</section>

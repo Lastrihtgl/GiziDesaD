@@ -1,27 +1,29 @@
 import {
 	Bell,
-	ChevronLeft,
 	ChevronRight,
-	House,
+	ClipboardList,
+	Droplets,
+	HeartPulse,
 	LogOut,
+	MapPin,
 	NotebookPen,
-	ShieldCheck,
-	Syringe,
 	Trees,
-	Waves,
+	Stethoscope,
+	Wallet,
+	Home,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function InputDataRT() {
 	const navigate = useNavigate();
 
-	const steps = [
-		{ label: "Kesehatan Ibu", icon: ShieldCheck, active: true },
-		{ label: "Sanitasi", icon: House },
-		{ label: "Air Bersih", icon: Waves },
-		{ label: "Ekonomi", icon: NotebookPen },
-		{ label: "Akses Kesehatan", icon: Syringe },
-		{ label: "Pangan Lokal", icon: Trees },
+	const indicators = [
+		{ label: "Kondisi ibu hamil & kepatuhan ANC", icon: HeartPulse, placeholder: "Contoh: 5 ibu hamil, 4 rutin ANC" },
+		{ label: "Sanitasi", icon: ClipboardList, placeholder: "Contoh: 12 rumah layak, 3 belum layak" },
+		{ label: "Akses air bersih", icon: Droplets, placeholder: "Contoh: mayoritas akses air bersih" },
+		{ label: "Kondisi ekonomi keluarga", icon: Wallet, placeholder: "Contoh: 8 keluarga rentan ekonomi" },
+		{ label: "Akses layanan kesehatan", icon: Stethoscope, placeholder: "Contoh: jarak posyandu 1 km" },
+		{ label: "Ketersediaan pangan lokal", icon: Trees, placeholder: "Contoh: ikan jurung dan daun kelor tersedia" },
 	];
 
 	return (
@@ -44,7 +46,7 @@ function InputDataRT() {
 
 					<nav className="kader-nav">
 						<button type="button" onClick={() => navigate("/kader/dashboard")}>
-							<House size={16} />
+							<Home size={16} />
 							Dashboard
 						</button>
 						<button type="button" className="active" onClick={() => navigate("/kader/input-data-rt")}>
@@ -53,16 +55,12 @@ function InputDataRT() {
 							<ChevronRight size={16} />
 						</button>
 						<button type="button" onClick={() => navigate("/kader/data-warga")}>
-							<NotebookPen size={16} />
-							Tugas Saya
-						</button>
-						<button type="button" onClick={() => navigate("/kader/peta-risiko")}>
-							<NotebookPen size={16} />
-							Peta Risiko
+							<MapPin size={16} />
+							Status RT
 						</button>
 						<button type="button" onClick={() => navigate("/kader/edukasi-pangan")}>
-							<NotebookPen size={16} />
-							Pangan Lokal
+							<Trees size={16} />
+							Panduan Pangan
 						</button>
 					</nav>
 				</div>
@@ -96,71 +94,50 @@ function InputDataRT() {
 				<section className="kader-page-header">
 					<div>
 						<h1>Input Data RT</h1>
-						<p>Lengkapi data kesehatan dan kondisi RT secara bertahap.</p>
+						<p>Form sederhana untuk 6 indikator risiko stunting per RT.</p>
 					</div>
 				</section>
 
 				<section className="kader-card kader-form-shell">
-					<div className="kader-progress-head">
-						<span>Langkah 1 dari 6</span>
-						<small>17% selesai</small>
-					</div>
-					<div className="kader-progress-bar">
-						<span />
-					</div>
-
-					<div className="kader-step-list">
-						{steps.map((step) => {
-							const Icon = step.icon;
-
-							return (
-								<div key={step.label} className={step.active ? "kader-step active" : "kader-step"}>
-									<Icon size={18} />
-									<span>{step.label}</span>
-								</div>
-							);
-						})}
-					</div>
-
 					<div className="kader-form-card">
 						<div className="kader-form-title">
-							<span className="kader-form-icon">❤</span>
+							<span className="kader-form-icon">6</span>
 							<div>
-								<h2>Kesehatan Ibu</h2>
-								<p>Isi informasi terkait kesehatan ibu</p>
+								<h2>Data Risiko Per RT</h2>
+								<p>Isi singkat, jelas, dan sesuai kondisi lapangan.</p>
 							</div>
 						</div>
 
 						<div className="kader-form-grid">
 							<label>
-								<span>Jumlah ibu hamil</span>
-								<input type="text" placeholder="Masukkan jumlah ibu hamil" />
+								<span>RT / Dusun</span>
+								<input type="text" placeholder="Contoh: RT 05 Dusun A" />
 							</label>
-							<label>
-								<span>Rutin periksa ANC</span>
-								<input type="text" placeholder="Ya / Tidak" />
-							</label>
-							<label>
-								<span>Konsumsi tablet Fe</span>
-								<input type="text" placeholder="Masukkan keterangan" />
-							</label>
-							<label>
-								<span>Status gizi ibu hamil</span>
-								<input type="text" placeholder="Masukkan status gizi" />
-							</label>
+
+							{indicators.map((item) => {
+								const Icon = item.icon;
+
+								return (
+									<label key={item.label}>
+										<span className="kader-label-with-icon">
+											<Icon size={15} /> {item.label}
+										</span>
+										<input type="text" placeholder={item.placeholder} />
+									</label>
+								);
+							})}
 						</div>
 
 						<div className="kader-form-actions">
-							<button type="button" className="kader-button is-secondary" onClick={() => navigate("/kader/dashboard")}>
-								<ChevronLeft size={16} />
-								Sebelumnya
+							<button type="button" className="kader-button is-secondary" onClick={() => navigate("/kader/data-warga")}>
+								Lihat Status RT
 							</button>
 							<div className="kader-form-actions-right">
 								<button type="button" className="kader-button is-secondary">
 									Simpan Draft
 								</button>
 								<button type="button" className="kader-button is-primary">
-									Selanjutnya
+									Kirim Data RT
 									<ChevronRight size={16} />
 								</button>
 							</div>
@@ -169,7 +146,7 @@ function InputDataRT() {
 
 					<div className="kader-tip-box">
 						<strong>Tips Pengisian Data</strong>
-						<p>Data yang Anda masukkan akan digunakan untuk menghitung skor risiko stunting (IRS). Pastikan informasi yang diberikan akurat. Anda bisa menyimpan draft dan melanjutkan nanti.</p>
+						<p>Gunakan bahasa sederhana saat mencatat. Jika ragu, isi poin utama dulu lalu simpan draft untuk dilengkapi setelah kunjungan berikutnya.</p>
 					</div>
 				</section>
 			</main>
