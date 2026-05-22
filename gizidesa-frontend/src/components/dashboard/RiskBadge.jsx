@@ -1,11 +1,11 @@
 import { formatRiskLabel } from "../../utils/formatters";
 
 function RiskBadge({ value }) {
-  return (
+    return (
     <span className={`risk-badge risk-badge-${value || "unknown"}`}>
-      {formatRiskLabel(value)}
+        {formatRiskLabel(value)}
     </span>
-  );
+    );
 }
 
 export default RiskBadge;

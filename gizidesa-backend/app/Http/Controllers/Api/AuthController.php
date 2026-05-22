@@ -20,7 +20,7 @@ class AuthController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
         ]);
-
+        
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -29,9 +29,9 @@ class AuthController extends Controller
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
         ]);
-
+        
         $token = $user->createToken('gizidesa-token')->plainTextToken;
-
+        
         return response()->json([
             'message' => 'Registrasi berhasil',
             'user' => $user,
